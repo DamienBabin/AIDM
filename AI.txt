@@ -1,0 +1,17 @@
+# Create solution and projects
+dotnet new sln
+dotnet new webapi -n DnDAdventure.API
+dotnet new classlib -n DnDAdventure.Core
+dotnet new classlib -n DnDAdventure.Infrastructure
+dotnet new classlib -n DnDAdventure.AI
+dotnet sln add DnDAdventure.API
+dotnet sln add DnDAdventure.Core
+dotnet sln add DnDAdventure.Infrastructure
+dotnet sln add DnDAdventure.AI
+dotnet new webapp -n DnDAdventure.Web
+dotnet sln add DnDAdventure.Web
+
+# Add references between projects
+dotnet add DnDAdventure.API reference DnDAdventure.Core DnDAdventure.Infrastructure DnDAdventure.AI
+dotnet add DnDAdventure.Infrastructure reference DnDAdventure.Core
+dotnet add DnDAdventure.Web reference DnDAdventure.Core DnDAdventure.Infrastructure

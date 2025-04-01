@@ -1,0 +1,36 @@
+# docker-compose.yml
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - AI:Endpoint=http://localhost:8080/generate
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiBaseUrl=http://api
+    depends_on:
+      - api
+
+  # Development container for working on the project
+  dev:
+    image: mcr.microsoft.com/dotnet/sdk:7.0
+    volumes:
+      - .:/app
+    working_dir: /app
+    ports:
+      - "5002:5000"
+    tty: true
+    command: /bin/bash

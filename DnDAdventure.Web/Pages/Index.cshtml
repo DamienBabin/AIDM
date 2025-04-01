@@ -1,0 +1,257 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "D&D Adventure";
+}
+
+<div class="text-center">
+    <h1 class="display-4">D&D Choose Your Adventure</h1>
+    <p>Create your character and begin your adventure!</p>
+</div>
+
+<div id="character-creation">
+    <h2>Create Your Character</h2>
+    <form id="character-form" class="row g-3">
+        <div class="col-md-6">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="col-md-3">
+            <label for="race" class="form-label">Race</label>
+            <select class="form-select" id="race" required>
+                <option value="" selected disabled>Select Race</option>
+                <option value="Human">Human</option>
+                <option value="Elf">Elf</option>
+                <option value="Dwarf">Dwarf</option>
+                <option value="Halfling">Halfling</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="class" class="form-label">Class</label>
+            <select class="form-select" id="class" required>
+                <option value="" selected disabled>Select Class</option>
+                <option value="Warrior">Warrior</option>
+                <option value="Mage">Mage</option>
+                <option value="Rogue">Rogue</option>
+                <option value="Cleric">Cleric</option>
+            </select>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Begin Adventure</button>
+        </div>
+    </form>
+</div>
+
+<div id="adventure" class="mt-4" style="display: none;">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div id="description" class="mb-4"></div>
+                    <div id="choices"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 id="char-name"></h5>
+                </div>
+                <div class="card-body">
+                    <div id="char-details" class="mb-3"></div>
+                    <h6>Attributes</h6>
+                    <ul id="char-attributes" class="list-group mb-3"></ul>
+                    <h6>Inventory</h6>
+                    <ul id="char-inventory" class="list-group"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const apiBaseUrl = '@Model.ApiBaseUrl';
+        let gameStateId = '';
+        let character = null;
+        
+        document.getElementById('character-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Create character object
+            const charData = {
+                id: crypto.randomUUID(),
+                name: document.getElementById('name').value,
+                race: document.getElementById('race').value,
+                class: document.getElementById('class').value,
+                level: 1,
+                attributes: {
+                    "Strength": 10,
+                    "Dexterity": 10,
+                    "Constitution": 10,
+                    "Intelligence": 10,
+                    "Wisdom": 10,
+                    "Charisma": 10
+                },
+                inventory: [],
+                healthPoints: 10,
+                maxHealthPoints: 10
+            };
+            
+            // Adjust attributes based on race
+            if (charData.race === 'Human') {
+                Object.keys(charData.attributes).forEach(key => {
+                    charData.attributes[key] += 1;
+                });
+            } else if (charData.race === 'Elf') {
+                charData.attributes.Dexterity += 2;
+                charData.attributes.Intelligence += 1;
+            } else if (charData.race === 'Dwarf') {
+                charData.attributes.Constitution += 2;
+                charData.attributes.Strength += 1;
+            } else if (charData.race === 'Halfling') {
+                charData.attributes.Dexterity += 2;
+                charData.attributes.Charisma += 1;
+            }
+            
+            // Calculate HP based on class
+            if (charData.class === 'Warrior') {
+                charData.maxHealthPoints = 12 + Math.floor((charData.attributes.Constitution - 10) / 2);
+            } else if (charData.class === 'Mage') {
+                charData.maxHealthPoints = 6 + Math.floor((charData.attributes.Constitution - 10) / 2);
+            } else if (charData.class === 'Rogue') {
+                charData.maxHealthPoints = 8 + Math.floor((charData.attributes.Constitution - 10) / 2);
+            } else if (charData.class === 'Cleric') {
+                charData.maxHealthPoints = 10 + Math.floor((charData.attributes.Constitution - 10) / 2);
+            }
+            
+            charData.healthPoints = charData.maxHealthPoints;
+            
+            // Create new game
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/game/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(charData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to create game');
+                }
+                
+                const gameState = await response.json();
+                gameStateId = gameState.id;
+                character = charData;
+                
+                // Hide character creation, show adventure
+                document.getElementById('character-creation').style.display = 'none';
+                document.getElementById('adventure').style.display = 'block';
+                
+                // Load first node
+                await loadCurrentNode();
+                updateCharacterPanel();
+            } catch (error) {
+                console.error('Error creating game:', error);
+                alert('Failed to create game. See console for details.');
+            }
+        });
+        
+        async function loadCurrentNode() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/game/${gameStateId}/node`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load adventure node');
+                }
+                
+                const node = await response.json();
+                
+                // Update UI
+                document.getElementById('description').innerHTML = node.description
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Convert markdown bold to HTML
+                
+                const choicesEl = document.getElementById('choices');
+                choicesEl.innerHTML = '';
+                
+                node.choices.forEach((choice, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'btn btn-outline-primary mb-2 w-100 text-start';
+                    button.textContent = choice.text;
+                    button.addEventListener('click', () => makeChoice(index));
+                    choicesEl.appendChild(button);
+                });
+            } catch (error) {
+                console.error('Error loading adventure node:', error);
+                alert('Failed to load adventure. See console for details.');
+            }
+        }
+        
+        async function makeChoice(choiceIndex) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/game/${gameStateId}/choice/${choiceIndex}`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to process choice');
+                }
+                
+                // Get updated game state
+                const gameStateResponse = await fetch(`${apiBaseUrl}/api/game/${gameStateId}`);
+                if (gameStateResponse.ok) {
+                    const gameState = await gameStateResponse.json();
+                    
+                    // Get updated character
+                    const characterResponse = await fetch(`${apiBaseUrl}/api/game/character/${gameState.characterId}`);
+                    if (characterResponse.ok) {
+                        character = await characterResponse.json();
+                    }
+                }
+                
+                // Load next node
+                await loadCurrentNode();
+                updateCharacterPanel();
+            } catch (error) {
+                console.error('Error making choice:', error);
+                alert('Failed to process choice. See console for details.');
+            }
+        }
+        
+        function updateCharacterPanel() {
+            document.getElementById('char-name').textContent = character.name;
+            document.getElementById('char-details').innerHTML = 
+                `Level ${character.level} ${character.race} ${character.class}<br>` +
+                `HP: ${character.healthPoints}/${character.maxHealthPoints}`;
+            
+            const attrsList = document.getElementById('char-attributes');
+            attrsList.innerHTML = '';
+            
+            Object.entries(character.attributes).forEach(([attr, value]) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between';
+                li.innerHTML = `<span>${attr}</span><span>${value}</span>`;
+                attrsList.appendChild(li);
+            });
+            
+            const invList = document.getElementById('char-inventory');
+            invList.innerHTML = '';
+            
+            if (character.inventory.length === 0) {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+                li.textContent = 'Empty';
+                invList.appendChild(li);
+            } else {
+                character.inventory.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = item;
+                    invList.appendChild(li);
+                });
+            }
+        }
+    </script>
+}
