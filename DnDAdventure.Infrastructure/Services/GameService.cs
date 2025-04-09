@@ -11,15 +11,18 @@ namespace DnDAdventure.Infrastructure.Services
         private readonly IRepository<GameState> _gameStateRepository;
         private readonly IRepository<Character> _characterRepository;
         private readonly AdventureGenerator _adventureGenerator;
+        private readonly IWorldService _worldService;
 
         public GameService(
             IRepository<GameState> gameStateRepository,
             IRepository<Character> characterRepository,
-            AdventureGenerator adventureGenerator)
+            AdventureGenerator adventureGenerator,
+            IWorldService worldService)
         {
             _gameStateRepository = gameStateRepository;
             _characterRepository = characterRepository;
             _adventureGenerator = adventureGenerator;
+            _worldService = worldService;
         }
 
         public async Task<GameState> CreateNewGame(Character character)
@@ -124,6 +127,66 @@ namespace DnDAdventure.Infrastructure.Services
                 character,
                 gameState,
                 selectedChoice.Text);
+        }
+
+        public async Task<AdventureNode> ProcessNPCInteraction(
+            Guid gameStateId,
+            Guid npcId,
+            string interactionType,
+            Guid? dialogId = null)
+        {
+            var gameState = await GetGameStateById(gameStateId);
+            var character = await GetCharacterById(gameState.CharacterId);
+
+            // Get the NPC from the world
+            var world = _worldService.CurrentWorld;
+            var npc = world.GetNPCById(npcId);
+
+            if (npc == null)
+            {
+                throw new KeyNotFoundException($"NPC with ID {npcId} not found");
+            }
+
+            // Create a response node based on the interaction
+            var node = new AdventureNode
+            {
+                Id = gameState.CurrentStoryNode,
+                Description = $"You interact with {npc.Name}."
+            };
+
+            // Process based on interaction type
+            switch (interactionType.ToLower())
+            {
+                case "talk":
+                    ProcessTalkInteraction(node, npc, dialogId, character, gameState);
+                    break;
+
+                case "trade":
+                    ProcessTradeInteraction(node, npc, character, gameState);
+                    break;
+
+                case "quest":
+                    ProcessQuestInteraction(node, npc, character, gameState);
+                    break;
+
+                default:
+                    node.Description = $"You approach {npc.Name}, but you're not sure how to interact.";
+                    node.Choices = new List<Choice>
+                    {
+                        new Choice { Text = "Return to exploration", NextNodeId = gameState.CurrentStoryNode }
+                    };
+                    break;
+            }
+
+            // Record the interaction
+            gameState.RecentNPCInteractions.Add(new GameState.NPCInteraction
+            {
+                NPCId = npc.Id,
+                NPCName = npc.Name
+            });
+
+            await _gameStateRepository.UpdateAsync(gameState);
+            return node;
         }
     }
 }

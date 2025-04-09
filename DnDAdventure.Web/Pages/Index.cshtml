@@ -43,28 +43,92 @@
 </div>
 
 <div id="adventure" class="mt-4" style="display: none;">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card">
+    <!-- Add a Map tab to the adventure interface -->
+    <ul class="nav nav-tabs" id="adventureTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="adventure-tab" data-bs-toggle="tab" data-bs-target="#adventure-content" type="button">Adventure</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-content" type="button">Map</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="character-tab" data-bs-toggle="tab" data-bs-target="#character-content" type="button">Character</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adventureTabsContent">
+        <!-- Adventure Tab (existing content) -->
+        <div class="tab-pane fade show active" id="adventure-content" role="tabpanel">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
                 <div class="card-body">
-                    <div id="description" class="mb-4"></div>
-                    <div id="choices"></div>
+                            <div id="description" class="mb-4"></div>
+                            <div id="choices"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 id="char-name"></h5>
+            </div>
+                        <div class="card-body">
+                            <div id="char-details" class="mb-3"></div>
+                            <h6>Attributes</h6>
+                            <ul id="char-attributes" class="list-group mb-3"></ul>
+                            <h6>Inventory</h6>
+                            <ul id="char-inventory" class="list-group"></ul>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+
+        <!-- Map Tab (new content) -->
+        <div class="tab-pane fade" id="map-content" role="tabpanel">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 id="map-name">Current Map</h5>
+                            <div>
+                                <button id="btn-map-north" class="btn btn-sm btn-outline-primary">North</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col d-flex justify-content-center">
+                                    <button id="btn-map-west" class="btn btn-outline-primary me-2">West</button>
+                                    <pre id="map-display" class="bg-light p-3 rounded" style="font-family: monospace;"></pre>
+                                    <button id="btn-map-east" class="btn btn-outline-primary ms-2">East</button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <button id="btn-map-south" class="btn btn-sm btn-outline-primary">South</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Location Info</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="location-info" class="mb-3"></div>
+                            <h6>Points of Interest</h6>
+                            <div id="poi-list"></div>
+                            <div id="poi-actions" class="mt-3"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 id="char-name"></h5>
-                </div>
-                <div class="card-body">
-                    <div id="char-details" class="mb-3"></div>
-                    <h6>Attributes</h6>
-                    <ul id="char-attributes" class="list-group mb-3"></ul>
-                    <h6>Inventory</h6>
-                    <ul id="char-inventory" class="list-group"></ul>
-                </div>
-            </div>
+
+        <!-- Character Tab (expanded character details) -->
+        <div class="tab-pane fade" id="character-content" role="tabpanel">
+            <!-- Character tab content would go here -->
         </div>
     </div>
 </div>
@@ -208,8 +272,8 @@
                     const characterResponse = await fetch(`${apiBaseUrl}/api/game/character/${gameState.characterId}`);
                     if (characterResponse.ok) {
                         character = await characterResponse.json();
-                    }
-                }
+                            }
+                        }
                 
                 // Load next node
                 await loadCurrentNode();
@@ -220,38 +284,441 @@
             }
         }
         
-        function updateCharacterPanel() {
-            document.getElementById('char-name').textContent = character.name;
-            document.getElementById('char-details').innerHTML = 
-                `Level ${character.level} ${character.race} ${character.class}<br>` +
-                `HP: ${character.healthPoints}/${character.maxHealthPoints}`;
-            
-            const attrsList = document.getElementById('char-attributes');
-            attrsList.innerHTML = '';
-            
-            Object.entries(character.attributes).forEach(([attr, value]) => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item d-flex justify-content-between';
-                li.innerHTML = `<span>${attr}</span><span>${value}</span>`;
-                attrsList.appendChild(li);
-            });
-            
-            const invList = document.getElementById('char-inventory');
-            invList.innerHTML = '';
-            
-            if (character.inventory.length === 0) {
-                const li = document.createElement('li');
-                li.className = 'list-group-item';
-                li.textContent = 'Empty';
-                invList.appendChild(li);
+                async function interactWithNPC(npcId, interactionType, dialogId = null) {
+                    try {
+                        const response = await fetch(`${apiBaseUrl}/api/game/${gameStateId}/interact-npc`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                npcId: npcId,
+                                interactionType: interactionType,
+                                dialogId: dialogId
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Failed to interact with NPC');
+                        }
+
+                        const node = await response.json();
+
+                        // Update the UI with the NPC interaction
+                        document.getElementById('description').innerHTML = node.description;
+
+                        // Clear previous choices
+                        const choicesDiv = document.getElementById('choices');
+                        choicesDiv.innerHTML = '';
+
+                        // Add new choices
+                        node.choices.forEach((choice, index) => {
+                            const button = document.createElement('button');
+                            button.className = 'btn btn-outline-primary m-2';
+                            button.textContent = choice.text;
+
+                            // Check if this is an NPC dialog option
+                            if (choice.effects && choice.effects.NPCDialogOption !== undefined) {
+                                button.onclick = () => handleNPCDialogOption(
+                                    npcId,
+                                    choice.effects.NPCDialogId,
+                                    parseInt(choice.effects.NPCDialogOption)
+                                );
             } else {
-                character.inventory.forEach(item => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item';
-                    li.textContent = item;
-                    invList.appendChild(li);
+                                button.onclick = () => makeChoice(index);
+                            }
+
+                            choicesDiv.appendChild(button);
+                        });
+                    } catch (error) {
+                        console.error('Error interacting with NPC:', error);
+                        alert('Failed to interact with NPC. See console for details.');
+                    }
+                }
+
+                async function handleNPCDialogOption(npcId, dialogId, optionIndex) {
+                    // This would need to be implemented to handle dialog navigation
+                    console.log(`Selected dialog option ${optionIndex} for dialog ${dialogId} with NPC ${npcId}`);
+
+                    // You would call interactWithNPC again with the new dialogId
+                    // that the option points to, but you'd need to get that information first
+                }
+
+                function updateCharacterPanel() {
+                    document.getElementById('char-name').textContent = character.name;
+                    document.getElementById('char-details').innerHTML =
+                        `Level ${character.level} ${character.race} ${character.class}<br>` +
+                        `HP: ${character.healthPoints}/${character.maxHealthPoints}`;
+                    const attrsList = document.getElementById('char-attributes');
+                    attrsList.innerHTML = '';
+
+                    Object.entries(character.attributes).forEach(([attr, value]) => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between';
+                        li.innerHTML = `<span>${attr}</span><span>${value}</span>`;
+                        attrsList.appendChild(li);
                 });
+
+                    const invList = document.getElementById('char-inventory');
+                    invList.innerHTML = '';
+
+                    if (character.inventory.length === 0) {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                        li.textContent = 'Empty';
+                        invList.appendChild(li);
+                    } else {
+                        character.inventory.forEach(item => {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item';
+                            li.textContent = item;
+                            invList.appendChild(li);
+                        });
             }
         }
+
+        // Map functionality
+        let currentMapId = '';
+        let currentX = 0;
+        let currentY = 0;
+        let currentMapName = '';
+        let currentPOIs = [];
+        let selectedPOI = null;
+
+        // Initialize map tab
+        document.getElementById('map-tab').addEventListener('click', loadMapData);
+
+        // Direction buttons
+        document.getElementById('btn-map-north').addEventListener('click', () => moveCharacter('North'));
+        document.getElementById('btn-map-east').addEventListener('click', () => moveCharacter('East'));
+        document.getElementById('btn-map-south').addEventListener('click', () => moveCharacter('South'));
+        document.getElementById('btn-map-west').addEventListener('click', () => moveCharacter('West'));
+
+        async function loadMapData() {
+            try {
+                // Get character's current location
+                const response = await fetch(`${apiBaseUrl}/api/map/location/${character.id}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to load map data');
+                }
+
+                const locationData = await response.json();
+
+                currentMapId = locationData.mapId;
+                currentX = locationData.x;
+                currentY = locationData.y;
+                currentMapName = locationData.mapName;
+
+                // Update map display
+                document.getElementById('map-name').textContent = currentMapName;
+
+                // Get map display
+                const mapDisplayResponse = await fetch(`${apiBaseUrl}/api/map/${character.id}`);
+
+                if (mapDisplayResponse.ok) {
+                    const mapDisplay = await mapDisplayResponse.text();
+                    document.getElementById('map-display').textContent = mapDisplay;
+                }
+
+                // Update location info
+                updateLocationInfo(locationData);
+
+                // Load points of interest
+                loadPointsOfInterest();
+            } catch (error) {
+                console.error('Error loading map data:', error);
+                alert('Failed to load map data. See console for details.');
+            }
+        }
+
+        function updateLocationInfo(locationData) {
+            const locationInfo = document.getElementById('location-info');
+
+            locationInfo.innerHTML = `
+                <h6>${locationData.locationName || 'Unknown location'}</h6>
+                <p><strong>Terrain:</strong> ${locationData.terrainType}</p>
+                <p>${locationData.description}</p>
+                <p><strong>Coordinates:</strong> (${locationData.x}, ${locationData.y})</p>
+            `;
+        }
+
+        async function loadPointsOfInterest() {
+            try {
+                // Get POIs at current location
+                const response = await fetch(`${apiBaseUrl}/api/map/explore/${character.id}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to load exploration data');
+                }
+
+                const explorationData = await response.json();
+
+                // Update POI list
+                const poiList = document.getElementById('poi-list');
+                poiList.innerHTML = '';
+
+                // Check if there's an NPC
+                if (explorationData.hasNPC) {
+                    const npcDiv = document.createElement('div');
+                    npcDiv.className = 'card mb-2 poi-card';
+                    npcDiv.innerHTML = `
+                        <div class="card-body">
+                            <h6 class="card-title">${explorationData.npcInfo.name}</h6>
+                            <p class="card-text">${explorationData.npcInfo.description}</p>
+                            <button class="btn btn-sm btn-outline-primary interact-npc" data-npc-id="${explorationData.npcInfo.id}">Talk</button>
+                        </div>
+                    `;
+                    poiList.appendChild(npcDiv);
+                }
+
+                // Check if there's a point of interest
+                if (explorationData.hasPointOfInterest) {
+                    const poiDiv = document.createElement('div');
+                    poiDiv.className = 'card mb-2 poi-card';
+                    poiDiv.innerHTML = `
+                        <div class="card-body">
+                            <h6 class="card-title">${explorationData.pointOfInterestInfo.name}</h6>
+                            <p class="card-text">${explorationData.pointOfInterestInfo.description}</p>
+                            <button class="btn btn-sm btn-outline-primary interact-poi" data-poi-id="${explorationData.pointOfInterestInfo.id}">Examine</button>
+                        </div>
+                    `;
+                    poiList.appendChild(poiDiv);
+                }
+
+                // Check if there's a structure
+                if (explorationData.hasStructure) {
+                    const structureDiv = document.createElement('div');
+                    structureDiv.className = 'card mb-2 poi-card';
+                    structureDiv.innerHTML = `
+                        <div class="card-body">
+                            <h6 class="card-title">${explorationData.structureInfo.name}</h6>
+                            <p class="card-text">${explorationData.structureInfo.description}</p>
+                            <button class="btn btn-sm btn-outline-primary interact-structure" data-structure-id="${explorationData.structureInfo.id}">Enter</button>
+                        </div>
+                    `;
+                    poiList.appendChild(structureDiv);
+                }
+
+                // If no POIs found
+                if (!explorationData.hasNPC && !explorationData.hasPointOfInterest && !explorationData.hasStructure) {
+                    poiList.innerHTML = '<p>There\'s nothing of interest here.</p>';
+                }
+
+                // Add event listeners to interaction buttons
+                document.querySelectorAll('.interact-poi').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const poiId = button.getAttribute('data-poi-id');
+                        showPOIActions(poiId);
+                    });
+                });
+
+                document.querySelectorAll('.interact-npc').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const npcId = button.getAttribute('data-npc-id');
+                        startNPCInteraction(npcId);
+                    });
+                });
+
+                document.querySelectorAll('.interact-structure').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const structureId = button.getAttribute('data-structure-id');
+                        enterStructure(structureId);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading points of interest:', error);
+                alert('Failed to load points of interest. See console for details.');
+            }
+        }
+
+        async function showPOIActions(poiId) {
+            try {
+                // Get POI details (this would be a new endpoint)
+                const response = await fetch(`${apiBaseUrl}/api/map/poi/${poiId}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to load POI actions');
+                }
+
+                const poiData = await response.json();
+                selectedPOI = poiData;
+
+                // Show available actions
+                const actionsDiv = document.getElementById('poi-actions');
+                actionsDiv.innerHTML = `
+                    <h6>Actions for ${poiData.name}</h6>
+                    <div id="poi-action-buttons"></div>
+                `;
+
+                const actionButtons = document.getElementById('poi-action-buttons');
+
+                poiData.availableActions.forEach(action => {
+                    const button = document.createElement('button');
+                    button.className = 'btn btn-sm btn-outline-primary me-2 mb-2';
+                    button.textContent = action.name;
+                    button.addEventListener('click', () => performPOIAction(poiId, action.name));
+                    actionButtons.appendChild(button);
+                });
+
+                if (poiData.availableActions.length === 0) {
+                    actionsDiv.innerHTML += '<p>No actions available.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading POI actions:', error);
+                alert('Failed to load POI actions. See console for details.');
+            }
+        }
+
+        async function performPOIAction(poiId, action) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/map/interact/${character.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        pointOfInterestId: poiId,
+                        action: action
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to perform action');
+                }
+
+                const result = await response.json();
+
+                // Show result message
+                alert(result.message);
+
+                // Update inventory if items were gained or lost
+                if (result.itemsGained.length > 0 || result.itemsLost.length > 0) {
+                    // Refresh character data
+                    const characterResponse = await fetch(`${apiBaseUrl}/api/game/character/${character.id}`);
+                    if (characterResponse.ok) {
+                        character = await characterResponse.json();
+                        updateCharacterPanel();
+                    }
+                }
+
+                // Refresh POI list
+                loadPointsOfInterest();
+            } catch (error) {
+                console.error('Error performing POI action:', error);
+                alert('Failed to perform action. See console for details.');
+            }
+        }
+
+        async function moveCharacter(direction) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/map/move/${character.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        direction: direction
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to move');
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update coordinates
+                    currentX = result.newX;
+                    currentY = result.newY;
+
+                    // Check if we moved to a new map
+                    if (currentMapId !== result.newMapId) {
+                        currentMapId = result.newMapId;
+                        currentMapName = result.newMapName;
+                        document.getElementById('map-name').textContent = currentMapName;
+                    }
+
+                    // Reload map display
+                    const mapDisplayResponse = await fetch(`${apiBaseUrl}/api/map/${character.id}`);
+
+                    if (mapDisplayResponse.ok) {
+                        const mapDisplay = await mapDisplayResponse.text();
+                        document.getElementById('map-display').textContent = mapDisplay;
+                    }
+
+                    // Load new location info
+                    const locationResponse = await fetch(`${apiBaseUrl}/api/map/location/${character.id}`);
+
+                    if (locationResponse.ok) {
+                        const locationData = await locationResponse.json();
+                        updateLocationInfo(locationData);
+                    }
+
+                    // Refresh POIs
+                    loadPointsOfInterest();
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error moving character:', error);
+                alert('Failed to move character. ' + error.message);
+            }
+        }
+
+        async function startNPCInteraction(npcId) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/npc/${npcId}/interact/${character.id}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to interact with NPC');
+                }
+
+                const dialogs = await response.json();
+
+                // Switch to adventure tab to show the interaction
+                document.getElementById('adventure-tab').click();
+
+                // Update the adventure content with NPC dialog
+                const descriptionDiv = document.getElementById('description');
+                const choicesDiv = document.getElementById('choices');
+
+                if (dialogs.length > 0) {
+                    const dialog = dialogs[0]; // Take the first dialog as the initial one
+
+                    descriptionDiv.innerHTML = `
+                        <div class="npc-dialog">
+                            <h5>${npcId}</h5>
+                            <p>${dialog.text}</p>
+                        </div>
+                    `;
+
+                    choicesDiv.innerHTML = '';
+
+                    dialog.options.forEach((option, index) => {
+                        const button = document.createElement('button');
+                        button.className = 'btn btn-outline-primary m-2';
+                        button.textContent = option.text;
+                        button.onclick = () => handleNPCDialogOption(npcId, dialog.id, index);
+                        choicesDiv.appendChild(button);
+                    });
+                } else {
+                    descriptionDiv.innerHTML = `
+                        <div class="npc-dialog">
+                            <h5>${npcId}</h5>
+                            <p>The NPC has nothing to say at the moment.</p>
+                        </div>
+                    `;
+                    choicesDiv.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('Error interacting with NPC:', error);
+                alert('Failed to interact with NPC. See console for details.');
+            }
+        }
+
+        // Add other functions for NPC interaction, entering structures, etc.
     </script>
 }

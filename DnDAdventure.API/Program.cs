@@ -30,8 +30,20 @@ builder.Services.AddSingleton<AdventureGenerator>(provider =>
     return new AdventureGenerator(httpClient, aiEndpoint);
 });
 
+// Configure WorldService
+builder.Services.AddSingleton<WorldService>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var savesDirectory = config["SavesDirectory"] ?? "Saves";
+    return new WorldService(savesDirectory);
+});
+
 // Configure game service
 builder.Services.AddScoped<IGameService, GameService>();
+
+// Add these service registrations
+builder.Services.AddSingleton<MapService>();
+builder.Services.AddSingleton<MapInitializer>();
 
 // Enable CORS
 builder.Services.AddCors(options =>
@@ -58,5 +70,10 @@ app.UseStaticFiles();
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
+
+// Initialize maps when the application starts
+var serviceProvider = app.Services;
+var mapInitializer = serviceProvider.GetRequiredService<MapInitializer>();
+mapInitializer.InitializeDefaultMaps();
 
 app.Run();

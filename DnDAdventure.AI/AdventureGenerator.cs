@@ -1,5 +1,5 @@
 // DnDAdventure.AI/AdventureGenerator.cs
-using DnDAdventure.Core.Models;
+using DnDAdventure.Core;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -34,28 +34,102 @@ namespace DnDAdventure.AI
         {
             try
             {
+                // Get NPCs at the current location from the World
+                List<NPC> npcsAtLocation = GetNPCsAtCurrentLocation(gameState);
+
+                // Generate the AI prompt
+                var advancedPrompt = AIPromptGenerator.GenerateAdvancedPrompt(
+                    character,
+                    gameState,
+                    userAction,
+                    npcsAtLocation);
                 var request = new
                 {
-                    character = character,
-                    gameState = gameState,
-                    userAction = userAction,
-                    prompt = $"Generate a D&D adventure node for a {character.Race} {character.Class} named {character.Name} who is currently at {gameState.CurrentLocation} and has just chosen to {userAction}."
+                    promptData = advancedPrompt,
+                    rawPrompt = AIPromptGenerator.GenerateAdventurePrompt(
+                        character,
+                        gameState,
+                        userAction,
+                        npcsAtLocation)
                 };
 
                 var response = await _httpClient.PostAsJsonAsync(_aiEndpoint, request);
-                
+
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadFromJsonAsync<AdventureNode>(_jsonOptions);
+                
+                    // Process any NPC interactions in the response
+                    if (result != null)
+                    {
+                        ProcessNPCInteractions(result, npcsAtLocation, gameState);
+                    }
+
                     return result ?? GetFallbackNode(gameState.CurrentStoryNode);
                 }
-                
+
                 return GetFallbackNode(gameState.CurrentStoryNode);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error generating adventure node: {ex.Message}");
                 return GetFallbackNode(gameState.CurrentStoryNode);
+            }
+        }
+
+        // Helper method to build NPC descriptions for the AI prompt
+        private string BuildNPCDescriptions(List<NPC> npcs)
+        {
+            if (npcs == null || npcs.Count == 0)
+                return "No NPCs present.";
+
+            return string.Join(", ", npcs.Select(npc =>
+                $"{npc.Name} ({npc.Race} {npc.Occupation}) - {npc.Description}"
+            ));
+        }
+
+        // Helper method to get NPCs at the current location
+        private List<NPC> GetNPCsAtCurrentLocation(GameState gameState)
+        {
+            // This would require a way to access the World service
+            // For this example, we'll assume a simple method exists
+            // In a real implementation, you'd need to pass the World or a service
+
+            // Placeholder method - in a real implementation, you would access the World
+            return new List<NPC>();
+        }
+
+        // Process any NPC interactions from the AI response
+        private void ProcessNPCInteractions(AdventureNode node, List<NPC> npcsAtLocation, GameState gameState)
+        {
+            // Look for NPC interaction effects in the choices
+            foreach (var choice in node.Choices)
+            {
+                if (choice.Effects.TryGetValue("InteractWithNPC", out var npcName))
+                {
+                    // Find the NPC by name
+                    var npc = npcsAtLocation.FirstOrDefault(n =>
+                        n.Name.Equals(npcName, StringComparison.OrdinalIgnoreCase));
+
+                    if (npc != null)
+                    {
+                        // Add any NPC-specific effects
+                        if (choice.Effects.TryGetValue("ChangeNPCDisposition", out var dispositionChange))
+                        {
+                            if (int.TryParse(dispositionChange, out var change))
+                            {
+                                // This would require a way to modify the NPC in the world
+                                // npc.Disposition += change;
+                            }
+                        }
+
+                        if (choice.Effects.TryGetValue("GetItemFromNPC", out var itemName))
+                        {
+                            // This would handle item transfers from NPCs to the player
+                            // We'd need a way to modify the NPC and character inventories
+                        }
+                    }
+                }
             }
         }
 
@@ -170,3 +244,4 @@ namespace DnDAdventure.AI
         }
     }
 }
+

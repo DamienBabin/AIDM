@@ -15,3 +15,4 @@ dotnet sln add DnDAdventure.Web
 dotnet add DnDAdventure.API reference DnDAdventure.Core DnDAdventure.Infrastructure DnDAdventure.AI
 dotnet add DnDAdventure.Infrastructure reference DnDAdventure.Core
 dotnet add DnDAdventure.Web reference DnDAdventure.Core DnDAdventure.Infrastructure
+
