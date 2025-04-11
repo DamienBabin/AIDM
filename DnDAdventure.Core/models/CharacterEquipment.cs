@@ -1,4 +1,6 @@
-// DnDAdventure.Core/Models/CharacterEquipment.cs
+// DnDAdventure.Core/models/CharacterEquipment.cs
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace DnDAdventure.Core.Models

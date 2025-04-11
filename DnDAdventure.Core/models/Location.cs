@@ -1,5 +1,5 @@
 // DnDAdventure.Core/models/Location.cs
-namespace DnDAdventure.Core
+namespace DnDAdventure.Core.Models
 {
     public class Location
     {

@@ -1,4 +1,8 @@
-// DnDAdventure.Core/Models/Equipment.cs
+// DnDAdventure.Core/models/Equipment.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace DnDAdventure.Core.Models
 {
     public class Equipment

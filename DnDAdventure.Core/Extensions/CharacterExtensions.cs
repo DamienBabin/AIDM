@@ -1,12 +1,7 @@
 // DnDAdventure.Core/Extensions/CharacterExtensions.cs
 using DnDAdventure.Core.Models;
-
-namespace DnDAdventure.Core.Extensions
-{
-
-
-// DnDAdventure.Core/Extensions/CharacterExtensions.cs
-using DnDAdventure.Core.Models;
+using System;
+using System.Collections.Generic;
 
 namespace DnDAdventure.Core.Extensions
 {
@@ -102,9 +97,8 @@ namespace DnDAdventure.Core.Extensions
                 }
                 
                 // For ranged weapons, always use Dex
-                // Either use weapon.WeaponType or weapon.EquipmentType depending on the context
-                if (equipment.EquippedWeapon.Type == WeaponType.SimpleRanged ||
-                    equipment.EquippedWeapon.Type == WeaponType.MartialRanged)
+                if (equipment.EquippedWeapon.WeaponType == WeaponType.SimpleRanged ||
+                    equipment.EquippedWeapon.WeaponType == WeaponType.MartialRanged)
                 {
                     abilityUsed = "Dexterity";
                 }
@@ -146,5 +140,6 @@ namespace DnDAdventure.Core.Extensions
         }
     }
 }
-}
+
+
 

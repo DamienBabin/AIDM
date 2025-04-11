@@ -1,5 +1,5 @@
 // DnDAdventure.Core/Models/AdventureNode.cs
-namespace DnDAdventure.Core
+namespace DnDAdventure.Core.Models
 {
     public class AdventureNode
     {

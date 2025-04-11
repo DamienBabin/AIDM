@@ -1,7 +1,11 @@
 // DnDAdventure.AI/AdventureGenerator.cs
-using DnDAdventure.Core;
+using DnDAdventure.Core.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace DnDAdventure.AI
 {
@@ -28,8 +32,8 @@ namespace DnDAdventure.AI
         }
 
         public async Task<AdventureNode> GenerateNextNode(
-            Character character, 
-            GameState gameState, 
+            Character character,
+            GameState gameState,
             string userAction)
         {
             try
@@ -43,6 +47,7 @@ namespace DnDAdventure.AI
                     gameState,
                     userAction,
                     npcsAtLocation);
+
                 var request = new
                 {
                     promptData = advancedPrompt,
@@ -58,7 +63,7 @@ namespace DnDAdventure.AI
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadFromJsonAsync<AdventureNode>(_jsonOptions);
-                
+
                     // Process any NPC interactions in the response
                     if (result != null)
                     {
@@ -92,10 +97,7 @@ namespace DnDAdventure.AI
         private List<NPC> GetNPCsAtCurrentLocation(GameState gameState)
         {
             // This would require a way to access the World service
-            // For this example, we'll assume a simple method exists
-            // In a real implementation, you'd need to pass the World or a service
-
-            // Placeholder method - in a real implementation, you would access the World
+            // For this example, we'll return an empty list
             return new List<NPC>();
         }
 
@@ -239,9 +241,7 @@ namespace DnDAdventure.AI
                         }
                     }
                 }
-                // Add more fallback nodes as needed
             };
         }
     }
 }
-
