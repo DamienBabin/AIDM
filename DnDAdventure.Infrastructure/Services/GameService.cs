@@ -3,32 +3,31 @@ using DnDAdventure.AI;
 using DnDAdventure.Core.Models;
 using DnDAdventure.Core.Repositories;
 using DnDAdventure.Core.Services;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DnDAdventure.Infrastructure.Services
 {
     public class GameService : IGameService
     {
-        private readonly IRepository<GameState> _gameStateRepository;
-        private readonly IRepository<Character> _characterRepository;
         private readonly AdventureGenerator _adventureGenerator;
         private readonly IWorldService _worldService;
-
+        private readonly IGameRepository _gameRepository;
         public GameService(
-            IRepository<GameState> gameStateRepository,
-            IRepository<Character> characterRepository,
             AdventureGenerator adventureGenerator,
-            IWorldService worldService)
+            IWorldService worldService,
+            IGameRepository gameRepository)
         {
-            _gameStateRepository = gameStateRepository;
-            _characterRepository = characterRepository;
             _adventureGenerator = adventureGenerator;
             _worldService = worldService;
+            _gameRepository = gameRepository;
         }
 
         public async Task<GameState> CreateNewGame(Character character)
         {
             // Save character
-            await _characterRepository.AddAsync(character);
+            await _gameRepository.AddCharacterAsync(character);
             
             // Create initial game state
             var gameState = new GameState
@@ -39,13 +38,13 @@ namespace DnDAdventure.Infrastructure.Services
                 CurrentStoryNode = 1 // Starting node
             };
             
-            await _gameStateRepository.AddAsync(gameState);
+            await _gameRepository.AddGameStateAsync(gameState);
             return gameState;
         }
 
         public async Task<GameState> GetGameStateById(Guid id)
         {
-            var gameState = await _gameStateRepository.GetByIdAsync(id);
+            var gameState = await _gameRepository.GetGameStateByIdAsync(id);
             if (gameState == null)
             {
                 throw new KeyNotFoundException($"Game state with ID {id} not found");
@@ -55,7 +54,7 @@ namespace DnDAdventure.Infrastructure.Services
 
         public async Task<Character> GetCharacterById(Guid id)
         {
-            var character = await _characterRepository.GetByIdAsync(id);
+            var character = await _gameRepository.GetCharacterByIdAsync(id);
             if (character == null)
             {
                 throw new KeyNotFoundException($"Character with ID {id} not found");
@@ -120,7 +119,7 @@ namespace DnDAdventure.Infrastructure.Services
             
             // Update the current node
             gameState.CurrentStoryNode = selectedChoice.NextNodeId;
-            await _gameStateRepository.UpdateAsync(gameState);
+            await _gameRepository.UpdateGameStateAsync(gameState);
             
             // Generate the next node
             return await _adventureGenerator.GenerateNextNode(
@@ -185,8 +184,36 @@ namespace DnDAdventure.Infrastructure.Services
                 NPCName = npc.Name
             });
 
-            await _gameStateRepository.UpdateAsync(gameState);
+            await _gameRepository.UpdateGameStateAsync(gameState);
             return node;
         }
+    }
+
+    public interface IWorldService
+    {
+        World CurrentWorld { get; }
+        World CreateNewWorld(string worldName);
+        // Other methods as needed
+    }
+
+    public interface IGameRepository
+    {
+        Task<GameState> GetGameStateByIdAsync(Guid id);
+        Task<Character> GetCharacterByIdAsync(Guid id);
+        Task AddGameStateAsync(GameState gameState);
+        Task AddCharacterAsync(Character character);
+        Task UpdateGameStateAsync(GameState gameState);
+        // Other methods as needed
+    }
+
+    public interface IGameService
+    {
+        Task<GameState> CreateNewGame(Character character);
+        Task<GameState> GetGameStateById(Guid id);
+        Task<Character> GetCharacterById(Guid id);
+        Task<AdventureNode> GetCurrentNode(Guid gameStateId);
+        Task<AdventureNode> ProcessChoice(Guid gameStateId, int choiceIndex);
+        Task<AdventureNode> ProcessNPCInteraction(Guid gameStateId, Guid npcId, string interactionType, Guid? dialogId = null);
+        // Other methods as needed
     }
 }

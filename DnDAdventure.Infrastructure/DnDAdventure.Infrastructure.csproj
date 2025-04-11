@@ -8,6 +8,7 @@
 
 <ItemGroup>
     <ProjectReference Include="..\DnDAdventure.Core\DnDAdventure.Core.csproj" />
+    <ProjectReference Include="..\DnDAdventure.AI\DnDAdventure.AI.csproj" />
 </ItemGroup>
 
 </Project>

@@ -1,4 +1,6 @@
-// DnDAdventure.Core/Models/CharacterEquipment.cs
+// DnDAdventure.Core/models/CharacterEquipment.cs
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace DnDAdventure.Core.Models
@@ -77,7 +79,7 @@ namespace DnDAdventure.Core.Models
             // Check if it's a shield
             var shield = _equipmentList.GetArmorByName(itemName);
             
-            if (shield != null && shield.Type == ArmorType.Shield)
+            if (shield != null && shield.ArmorType == ArmorType.Shield)
             {
                 // Can't have shield if main weapon is two-handed
                 if (EquippedWeapon != null && EquippedWeapon.Properties.Contains(WeaponProperty.TwoHanded))
@@ -94,7 +96,7 @@ namespace DnDAdventure.Core.Models
         public bool EquipArmor(string armorName)
         {
             var armor = _equipmentList.GetArmorByName(armorName);
-            if (armor == null || armor.Type == ArmorType.Shield) return false;
+            if (armor == null || armor.ArmorType == ArmorType.Shield) return false;
             
             ArmorSlot = armorName;
             EquippedArmor = armor;
@@ -115,7 +117,7 @@ namespace DnDAdventure.Core.Models
             if (!string.IsNullOrEmpty(OffhandSlot))
             {
                 var shield = _equipmentList.GetArmorByName(OffhandSlot);
-                if (shield != null && shield.Type == ArmorType.Shield)
+                if (shield != null && shield.ArmorType == ArmorType.Shield)
                 {
                     shieldBonus = shield.ArmorClass;
                 }
@@ -168,3 +170,4 @@ namespace DnDAdventure.Core.Models
         }
     }
 }
+

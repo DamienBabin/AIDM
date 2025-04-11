@@ -1,4 +1,7 @@
-// DnDAdventure.Core/Models/DndClassesAndRaces.cs
+// DnDAdventure.Core/models/DndClassesAndRaces.cs
+using System;
+using System.Collections.Generic;
+
 namespace DnDAdventure.Core.Models
 {
     public class DndClass
@@ -321,3 +324,4 @@ namespace DnDAdventure.Core.Models
         };
     }
 }
+
