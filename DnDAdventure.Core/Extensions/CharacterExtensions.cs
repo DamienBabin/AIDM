@@ -3,11 +3,18 @@ using DnDAdventure.Core.Models;
 
 namespace DnDAdventure.Core.Extensions
 {
+
+
+// DnDAdventure.Core/Extensions/CharacterExtensions.cs
+using DnDAdventure.Core.Models;
+
+namespace DnDAdventure.Core.Extensions
+{
     public static class CharacterExtensions
     {
         private static readonly Dictionary<Guid, CharacterEquipment> _characterEquipment = new();
         private static readonly EquipmentList _equipmentList = new();
-        
+
         public static CharacterEquipment GetEquipment(this Character character)
         {
             if (!_characterEquipment.TryGetValue(character.Id, out var equipment))
@@ -15,7 +22,7 @@ namespace DnDAdventure.Core.Extensions
                 equipment = new CharacterEquipment(character.Id, _equipmentList);
                 _characterEquipment[character.Id] = equipment;
             }
-            
+        
             return equipment;
         }
         
@@ -24,7 +31,7 @@ namespace DnDAdventure.Core.Extensions
             var equipment = character.GetEquipment();
             return equipment.CalculateArmorClass(character.Attributes);
         }
-        
+
         public static bool EquipWeapon(this Character character, string weaponName)
         {
             var equipment = character.GetEquipment();
@@ -63,39 +70,40 @@ namespace DnDAdventure.Core.Extensions
             {
                 character.Inventory.Add(armorName);
             }
-            
+
             return result;
         }
-        
+
         // Helper for combat calculations
         public static string GetWeaponDamage(this Character character)
         {
             var equipment = character.GetEquipment();
-            
+
             if (equipment.EquippedWeapon != null)
             {
                 string baseDamage = equipment.EquippedWeapon.Damage;
-                
+
                 // Get ability modifier for damage bonus
                 string abilityUsed = "Strength"; // Default for melee weapons
-                
+
                 // If it's a finesse weapon, can use Dex instead of Str if higher
                 if (equipment.EquippedWeapon.Properties.Contains(WeaponProperty.Finesse))
                 {
                     int strMod = (character.Attributes.ContainsKey("Strength") ? character.Attributes["Strength"] : 10) - 10;
                     strMod = strMod / 2;
-                    
+
                     int dexMod = (character.Attributes.ContainsKey("Dexterity") ? character.Attributes["Dexterity"] : 10) - 10;
                     dexMod = dexMod / 2;
-                    
+
                     if (dexMod > strMod)
                     {
-                        abilityUsed = "Dexterity";
-                    }
+                    abilityUsed = "Dexterity";
+                }
                 }
                 
                 // For ranged weapons, always use Dex
-                if (equipment.EquippedWeapon.Type == WeaponType.SimpleRanged || 
+                // Either use weapon.WeaponType or weapon.EquipmentType depending on the context
+                if (equipment.EquippedWeapon.Type == WeaponType.SimpleRanged ||
                     equipment.EquippedWeapon.Type == WeaponType.MartialRanged)
                 {
                     abilityUsed = "Dexterity";
@@ -107,7 +115,7 @@ namespace DnDAdventure.Core.Extensions
                 {
                     modifier = (character.Attributes[abilityUsed] - 10) / 2;
                 }
-                
+
                 // Add damage bonus if positive
                 if (modifier > 0)
                 {
@@ -117,24 +125,26 @@ namespace DnDAdventure.Core.Extensions
                 {
                     return $"{baseDamage} - {Math.Abs(modifier)} {equipment.EquippedWeapon.DamageType}";
                 }
-                
+            
                 return $"{baseDamage} {equipment.EquippedWeapon.DamageType}";
             }
-            
+
             // Unarmed strike damage
-            int strMod = (character.Attributes.ContainsKey("Strength") ? character.Attributes["Strength"] : 10) - 10;
-            strMod = strMod / 2;
+            int strengthMod = (character.Attributes.ContainsKey("Strength") ? character.Attributes["Strength"] : 10) - 10;
+            strengthMod = strengthMod / 2;
             
-            if (strMod > 0)
+            if (strengthMod > 0)
             {
-                return $"1 + {strMod} Bludgeoning";
+                return $"1 + {strengthMod} Bludgeoning";
             }
-            else if (strMod < 0)
+            else if (strengthMod < 0)
             {
-                return $"1 - {Math.Abs(strMod)} Bludgeoning";
+                return $"1 - {Math.Abs(strengthMod)} Bludgeoning";
             }
             
             return "1 Bludgeoning";
         }
     }
 }
+}
+

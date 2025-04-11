@@ -20,19 +20,13 @@ namespace DnDAdventure.Core.Models
         public Dictionary<Guid, Character> Characters { get; set; } = new();
         public Dictionary<Guid, GameState> GameStates { get; set; } = new();
         public Dictionary<int, AdventureNode> AdventureNodes { get; set; } = new();
-        public Dictionary<Guid, NPC> NPCs { get; set; } = new();
-
+        public List<NPC> NPCs { get; set; } = new();
         // World-specific data
-        public Dictionary<string, string> Locations { get; set; } = new();
-        public Dictionary<string, string> NPCs { get; set; } = new();
+        public List<Location> Locations { get; set; } = new();
         public Dictionary<string, string> Quests { get; set; } = new();
         public Dictionary<string, object> CustomData { get; set; } = new();
-        
         // Equipment data
         [JsonIgnore]
-        private EquipmentList _equipmentList = new EquipmentList();
-        
-        // Dictionary to store equipment assignments for characters
         public Dictionary<Guid, CharacterEquipmentData> CharacterEquipment { get; set; } = new();
 
         // Collection of all world maps
@@ -46,6 +40,9 @@ namespace DnDAdventure.Core.Models
 
         // Current map and position for each player
         public Dictionary<Guid, PlayerMapPosition> PlayerPositions { get; set; } = new();
+
+        // Add this field to fix the errors
+        private EquipmentList _equipmentList = new EquipmentList();
 
         /// <summary>
         /// A serializable version of CharacterEquipment to avoid JsonIgnore issues
@@ -277,7 +274,7 @@ namespace DnDAdventure.Core.Models
                 return false;
 
             var armor = _equipmentList.GetArmorByName(armorName);
-            if (armor == null || armor.Type == ArmorType.Shield)
+            if (armor == null || armor.ArmorType == ArmorType.Shield)
                 return false;
 
             if (!CharacterEquipment.TryGetValue(characterId, out var equipData))
@@ -320,7 +317,7 @@ namespace DnDAdventure.Core.Models
             if (!string.IsNullOrEmpty(equipData.OffhandSlot))
             {
                 var shield = _equipmentList.GetArmorByName(equipData.OffhandSlot);
-                if (shield != null && shield.Type == ArmorType.Shield)
+                if (shield != null && shield.ArmorType == ArmorType.Shield)
                 {
                     shieldBonus = shield.ArmorClass;
                 }
@@ -509,3 +506,4 @@ namespace DnDAdventure.Core.Models
         }
     }
 }
+
