@@ -1,5 +1,5 @@
 // DnDAdventure.AI/AIPromptGenerator.cs
-using DnDAdventure.Core.Models;
+using DnDAdventure.Core;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

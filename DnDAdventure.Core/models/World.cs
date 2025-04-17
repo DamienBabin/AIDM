@@ -20,11 +20,10 @@ namespace DnDAdventure.Core.Models
         public Dictionary<Guid, Character> Characters { get; set; } = new();
         public Dictionary<Guid, GameState> GameStates { get; set; } = new();
         public Dictionary<int, AdventureNode> AdventureNodes { get; set; } = new();
-        public Dictionary<Guid, NPC> NPCs { get; set; } = new();
+        
 
         // World-specific data
         public Dictionary<string, string> Locations { get; set; } = new();
-        public Dictionary<string, string> NPCs { get; set; } = new();
         public Dictionary<string, string> Quests { get; set; } = new();
         public Dictionary<string, object> CustomData { get; set; } = new();
         
