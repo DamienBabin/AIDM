@@ -11,16 +11,5 @@ namespace DnDAdventure.Core.Models
         public List<string> ActiveQuests { get; set; } = new();
         public int CurrentStoryNode { get; set; }
         public Dictionary<string, bool> Flags { get; set; } = new();
-        public List<NPCInteraction> RecentNPCInteractions { get; set; } = new();
-    }
-
-    // Class to track recent NPC interactions
-    public class NPCInteraction
-    {
-        public Guid NPCId { get; set; }
-        public string NPCName { get; set; } = string.Empty;
-        public string InteractionType { get; set; } = string.Empty; // e.g., "Conversation", "Trade", "Quest"
-        public string Details { get; set; } = string.Empty;
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }
 }

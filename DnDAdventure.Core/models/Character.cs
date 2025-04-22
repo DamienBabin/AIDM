@@ -1,5 +1,5 @@
 // DnDAdventure.Core/Models/Character.cs
-namespace DnDAdventure.Core
+namespace DnDAdventure.Core.Models
 {
     public class Character
     {

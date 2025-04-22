@@ -1,5 +1,5 @@
 // DnDAdventure.Core/Models/AdventureNode.cs
-namespace DnDAdventure.Core
+namespace DnDAdventure.Core.Models
 {
     public class AdventureNode
     {
@@ -26,3 +26,4 @@ namespace DnDAdventure.Core
         public Dictionary<string, string> Effects { get; set; } = new();
     }
 }
+

@@ -24,7 +24,6 @@ namespace DnDAdventure.Core.Models
 
         // World-specific data
         public Dictionary<string, string> Locations { get; set; } = new();
-        public Dictionary<string, string> NPCs { get; set; } = new();
         public Dictionary<string, string> Quests { get; set; } = new();
         public Dictionary<string, object> CustomData { get; set; } = new();
         
@@ -397,6 +396,23 @@ namespace DnDAdventure.Core.Models
         }
 
         /// <summary>
+        /// Adds an NPC to the world
+        /// </summary>
+        public void AddNPC(NPC npc)
+        {
+            NPCs[npc.Id] = npc;
+        }
+
+        /// <summary>
+        /// Gets an NPC by ID
+        /// </summary>
+        public NPC? GetNPCById(Guid npcId)
+        {
+            NPCs.TryGetValue(npcId, out var npc);
+            return npc;
+        }
+
+        /// <summary>
         /// Sets a player's position on a map
         /// </summary>
         public void SetPlayerPosition(Guid characterId, Guid mapId, int x, int y)
@@ -509,3 +525,4 @@ namespace DnDAdventure.Core.Models
         }
     }
 }
+

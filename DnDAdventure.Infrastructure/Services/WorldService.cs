@@ -1,12 +1,13 @@
 // DnDAdventure.Infrastructure/Services/WorldService.cs
 using DnDAdventure.Core.Models;
+using DnDAdventure.Core.Services;
 
 namespace DnDAdventure.Infrastructure.Services
 {
     /// <summary>
     /// Service for managing the game world, including saves and world state
     /// </summary>
-    public class WorldService
+    public class WorldService : IWorldService
     {
         private readonly string _savesDirectory;
         private World _currentWorld;
@@ -140,7 +141,8 @@ namespace DnDAdventure.Infrastructure.Services
                             FileName = fileInfo.Name,
                             WorldName = worldName,
                             LastSaved = DateTime.TryParse(timestamp, out var date) ? date : fileInfo.LastWriteTime,
-                            FileSize = fileInfo.Length
+                            FileSize = fileInfo.Length,
+                            FormattedSize = FormatFileSize(fileInfo.Length)
                         });
                     }
                     catch
@@ -152,7 +154,8 @@ namespace DnDAdventure.Infrastructure.Services
                             FileName = fileInfo.Name,
                             WorldName = Path.GetFileNameWithoutExtension(file),
                             LastSaved = fileInfo.LastWriteTime,
-                            FileSize = fileInfo.Length
+                            FileSize = fileInfo.Length,
+                            FormattedSize = FormatFileSize(fileInfo.Length)
                         });
                     }
                 }
@@ -193,35 +196,6 @@ namespace DnDAdventure.Infrastructure.Services
         }
         
         /// <summary>
-        /// Information about a save file
-        /// </summary>
-        public class SaveFileInfo
-        {
-            public string FilePath { get; set; } = string.Empty;
-            public string FileName { get; set; } = string.Empty;
-            public string WorldName { get; set; } = string.Empty;
-            public DateTime LastSaved { get; set; }
-            public long FileSize { get; set; }
-            
-            public string FormattedSize => FormatFileSize(FileSize);
-            
-            private string FormatFileSize(long bytes)
-            {
-                string[] sizes = { "B", "KB", "MB", "GB" };
-                int order = 0;
-                double size = bytes;
-                
-                while (size >= 1024 && order < sizes.Length - 1)
-                {
-                    order++;
-                    size = size / 1024;
-                }
-                
-                return $"{size:0.##} {sizes[order]}";
-            }
-        }
-        
-        /// <summary>
         /// Reads the beginning of a JSON file
         /// </summary>
         private string ReadJsonStart(string filePath, int chars)
@@ -245,6 +219,21 @@ namespace DnDAdventure.Infrastructure.Services
             }
             
             return null;
+        }
+        
+        private string FormatFileSize(long bytes)
+        {
+            string[] sizes = { "B", "KB", "MB", "GB" };
+            int order = 0;
+            double size = bytes;
+            
+            while (size >= 1024 && order < sizes.Length - 1)
+            {
+                order++;
+                size = size / 1024;
+            }
+            
+            return $"{size:0.##} {sizes[order]}";
         }
     }
 }

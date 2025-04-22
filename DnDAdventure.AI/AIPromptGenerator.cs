@@ -143,3 +143,4 @@ namespace DnDAdventure.AI
         public bool HasItemsForSale { get; set; }
     }
 }
+

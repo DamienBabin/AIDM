@@ -1,5 +1,5 @@
 // DnDAdventure.AI/AdventureGenerator.cs
-using DnDAdventure.Core;
+using DnDAdventure.Core.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
 

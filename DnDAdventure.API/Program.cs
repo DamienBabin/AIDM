@@ -37,12 +37,14 @@ builder.Services.AddSingleton<WorldService>(sp =>
     var savesDirectory = config["SavesDirectory"] ?? "Saves";
     return new WorldService(savesDirectory);
 });
+builder.Services.AddSingleton<IWorldService>(sp => sp.GetRequiredService<WorldService>());
 
 // Configure game service
 builder.Services.AddScoped<IGameService, GameService>();
 
 // Add these service registrations
 builder.Services.AddSingleton<MapService>();
+builder.Services.AddSingleton<IMapService>(sp => sp.GetRequiredService<MapService>());
 builder.Services.AddSingleton<MapInitializer>();
 
 // Enable CORS
