@@ -1,5 +1,5 @@
 // DnDAdventure.AI/AIPromptGenerator.cs
-using DnDAdventure.Core;
+using DnDAdventure.Core.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -143,3 +143,4 @@ namespace DnDAdventure.AI
         public bool HasItemsForSale { get; set; }
     }
 }
+

@@ -20,7 +20,7 @@ namespace DnDAdventure.Core.Models
         public Dictionary<Guid, Character> Characters { get; set; } = new();
         public Dictionary<Guid, GameState> GameStates { get; set; } = new();
         public Dictionary<int, AdventureNode> AdventureNodes { get; set; } = new();
-        
+        public Dictionary<Guid, NPC> NPCs { get; set; } = new();
 
         // World-specific data
         public Dictionary<string, string> Locations { get; set; } = new();
@@ -508,3 +508,4 @@ namespace DnDAdventure.Core.Models
         }
     }
 }
+
