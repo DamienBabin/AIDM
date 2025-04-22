@@ -10,6 +10,8 @@ namespace DnDAdventure.Core.Models
         public string Race { get; set; } = string.Empty;
         public string Occupation { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public string CurrentLocation { get; set; } = string.Empty;
+        public int Disposition { get; set; } = 50;
         public List<string> Dialogs { get; set; } = new();
         public List<Guid> AvailableQuestIds { get; set; } = new();
         public List<InventoryItem> Inventory { get; set; } = new();

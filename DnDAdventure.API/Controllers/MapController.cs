@@ -1,7 +1,7 @@
 // DnDAdventure.API/Controllers/MapController.cs
 using Microsoft.AspNetCore.Mvc;
 using DnDAdventure.Core.Models;
-using DnDAdventure.Infrastructure.Services;
+using DnDAdventure.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,9 +13,9 @@ namespace DnDAdventure.API.Controllers
     [Route("api/[controller]")]
     public class MapController : ControllerBase
     {
-        private readonly MapService _mapService;
+        private readonly IMapService _mapService;
         
-        public MapController(MapService mapService)
+        public MapController(IMapService mapService)
         {
             _mapService = mapService;
         }

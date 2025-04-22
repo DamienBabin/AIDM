@@ -1,4 +1,5 @@
 using DnDAdventure.Core.Models;
+using DnDAdventure.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,13 +7,42 @@ using System.Threading.Tasks;
 
 namespace DnDAdventure.Infrastructure.Services
 {
-    public class MapService
+    public class MapService : IMapService
     {
         private readonly WorldService _worldService;
 
         public MapService(WorldService worldService)
         {
             _worldService = worldService;
+        }
+
+        /// <summary>
+        /// Gets the character's current location
+        /// </summary>
+        public (WorldMap map, int x, int y) GetCharacterLocation(Guid characterId)
+        {
+            var position = _worldService.CurrentWorld.GetPlayerPosition(characterId);
+            if (position == null)
+                return (null, 0, 0);
+
+            var map = _worldService.CurrentWorld.GetMap(position.CurrentMapId);
+            return (map, position.X, position.Y);
+        }
+        
+        /// <summary>
+        /// Gets all maps in the world
+        /// </summary>
+        public List<WorldMap> GetAllMaps()
+        {
+            return _worldService.CurrentWorld.GetAllMaps();
+        }
+        
+        /// <summary>
+        /// Gets a map by ID
+        /// </summary>
+        public WorldMap? GetMap(Guid mapId)
+        {
+            return _worldService.CurrentWorld.GetMap(mapId);
         }
 
 /// <summary>
@@ -128,7 +158,7 @@ namespace DnDAdventure.Infrastructure.Services
 
             // Check for NPCs
             if (cell.NPCId != Guid.Empty)
-                    {
+            {
                 var npc = _worldService.CurrentWorld.NPCs.TryGetValue(cell.NPCId, out var npcValue) ? npcValue : null;
                 if (npc != null)
                 {
@@ -139,32 +169,34 @@ namespace DnDAdventure.Infrastructure.Services
                         Name = npc.Name,
                         Description = npc.Description
                     };
-        }
-    }
-    
+                }
+            }
+            
             // Check for points of interest
             if (cell.PointOfInterestId != Guid.Empty)
-{
+            {
                 var poi = _worldService.CurrentWorld.PointsOfInterest.TryGetValue(cell.PointOfInterestId, out var poiValue) ? poiValue : null;
                 if (poi != null)
-{
+                {
                     result.HasPointOfInterest = true;
                     result.PointOfInterestInfo = new POIBriefInfo
-{
+                    {
                         Id = poi.Id,
                         Name = poi.Name,
                         Description = poi.Description,
-                        Type = poi.Type.ToString()
+                        Type = poi.Type.ToString(),
+                        X = position.X,
+                        Y = position.Y
                     };
-}
+                }
             }
 
             // Check for structures
             if (cell.StructureId != Guid.Empty)
-{
+            {
                 var structure = _worldService.CurrentWorld.Structures.TryGetValue(cell.StructureId, out var structureValue) ? structureValue : null;
                 if (structure != null)
-{
+                {
                     result.HasStructure = true;
                     result.StructureInfo = new StructureBriefInfo
                     {
@@ -173,7 +205,7 @@ namespace DnDAdventure.Infrastructure.Services
                         Description = structure.Description,
                         Type = structure.Type.ToString()
                     };
-}
+                }
             }
 
             return result;
@@ -300,60 +332,6 @@ namespace DnDAdventure.Infrastructure.Services
             }
 
             return result;
-        }
-
-        // Result classes for the service methods
-        public class ExplorationResult
-        {
-            public bool Success { get; set; }
-            public string Message { get; set; } = string.Empty;
-            public string CellName { get; set; } = string.Empty;
-            public string CellDescription { get; set; } = string.Empty;
-            public string MapName { get; set; } = string.Empty;
-            public string TerrainType { get; set; } = string.Empty;
-
-            public bool HasNPC { get; set; } = false;
-            public NPCBriefInfo? NPCInfo { get; set; }
-
-            public bool HasPointOfInterest { get; set; } = false;
-            public POIBriefInfo? PointOfInterestInfo { get; set; }
-
-            public bool HasStructure { get; set; } = false;
-            public StructureBriefInfo? StructureInfo { get; set; }
-        }
-
-        public class InteractionResult
-        {
-            public bool Success { get; set; }
-            public string Message { get; set; } = string.Empty;
-            public List<string> ItemsGained { get; set; } = new();
-            public List<string> ItemsLost { get; set; } = new();
-            public List<string> QuestsStarted { get; set; } = new();
-        }
-
-        public class NPCBriefInfo
-        {
-            public Guid Id { get; set; }
-            public string Name { get; set; } = string.Empty;
-            public string Description { get; set; } = string.Empty;
-        }
-
-        public class POIBriefInfo
-        {
-            public Guid Id { get; set; }
-            public string Name { get; set; } = string.Empty;
-            public string Description { get; set; } = string.Empty;
-            public string Type { get; set; } = string.Empty;
-            public int X { get; set; }
-            public int Y { get; set; }
-        }
-
-        public class StructureBriefInfo
-        {
-            public Guid Id { get; set; }
-            public string Name { get; set; } = string.Empty;
-            public string Description { get; set; } = string.Empty;
-            public string Type { get; set; } = string.Empty;
         }
     }
 }

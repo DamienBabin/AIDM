@@ -1,6 +1,7 @@
 // DnDAdventure.API/Controllers/SaveController.cs
 using Microsoft.AspNetCore.Mvc;
 using DnDAdventure.Core.Models;
+using DnDAdventure.Core.Services;
 using DnDAdventure.Infrastructure.Services;
 
 namespace DnDAdventure.API.Controllers
@@ -9,15 +10,15 @@ namespace DnDAdventure.API.Controllers
     [Route("api/[controller]")]
     public class SaveController : ControllerBase
     {
-        private readonly WorldService _worldService;
+        private readonly IWorldService _worldService;
         
-        public SaveController(WorldService worldService)
+        public SaveController(IWorldService worldService)
         {
             _worldService = worldService;
         }
         
         [HttpGet]
-        public ActionResult<IEnumerable<WorldService.SaveFileInfo>> GetSaves()
+        public ActionResult<IEnumerable<SaveFileInfo>> GetSaves()
         {
             return Ok(_worldService.GetAvailableSaves());
         }

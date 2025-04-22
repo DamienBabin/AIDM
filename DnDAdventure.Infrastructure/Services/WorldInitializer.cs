@@ -58,50 +58,19 @@ namespace DnDAdventure.Infrastructure.Services
                 Description = "A portly man with a bushy mustache and a jolly laugh. He knows all the local gossip.",
                 CurrentLocation = "tavern",
                 Disposition = 70,
-                Inventory = new List<NPCItem>
+                Inventory = new List<InventoryItem>
                 {
-                    new NPCItem
+                    new InventoryItem
                     {
                         Name = "Healing Potion",
-                        Type = ItemType.Potion,
                         Value = 50,
                         IsTradeable = true
                     },
-                    new NPCItem
+                    new InventoryItem
                     {
                         Name = "Tavern Key",
-                        Type = ItemType.QuestItem,
                         Value = 0,
-                        IsTradeable = false,
-                        IsQuestItem = true,
-                        RelatedQuestId = "tavern_cellar_quest"
-                    }
-                },
-                Dialogs = new List<NPCDialog>
-                {
-                    new NPCDialog
-                    {
-                        Id = Guid.NewGuid(),
-                        Topic = "Greeting",
-                        Text = "Welcome to The Drunken Dragon! What can I get for you, traveler?",
-                        Options = new List<NPCDialogOption>
-                        {
-                            new NPCDialogOption
-                            {
-                                Text = "I'd like a room for the night.",
-                                NextDialogId = Guid.NewGuid() // We'd set this properly in a real implementation
-                            },
-                            new NPCDialogOption
-                            {
-                                Text = "What's the latest gossip around town?",
-                                NextDialogId = Guid.NewGuid()
-                            },
-                            new NPCDialogOption
-                            {
-                                Text = "Have you heard about any work available?",
-                                NextDialogId = Guid.NewGuid()
-                            }
-                        }
+                        IsTradeable = false
                     }
                 }
             };
@@ -116,47 +85,19 @@ namespace DnDAdventure.Infrastructure.Services
                 Description = "A stout dwarven woman with muscular arms and a soot-covered apron. Her braided beard has metal ornaments.",
                 CurrentLocation = "blacksmith",
                 Disposition = 50,
-                Inventory = new List<NPCItem>
+                Inventory = new List<InventoryItem>
                 {
-                    new NPCItem
+                    new InventoryItem
                     {
                         Name = "Iron Sword",
-                        Type = ItemType.Weapon,
                         Value = 100,
                         IsTradeable = true
                     },
-                    new NPCItem
+                    new InventoryItem
                     {
                         Name = "Leather Armor",
-                        Type = ItemType.Armor,
                         Value = 75,
                         IsTradeable = true
-                    }
-                },
-                Dialogs = new List<NPCDialog>
-                {
-                    new NPCDialog
-                    {
-                        Id = Guid.NewGuid(),
-                        Topic = "Greeting",
-                        Text = "Ye looking for quality steel? Ye've come to the right place.",
-                        Options = new List<NPCDialogOption>
-                        {
-                            new NPCDialogOption
-                            {
-                                Text = "Show me what you have for sale.",
-                                NextDialogId = Guid.NewGuid()
-                            },
-                            new NPCDialogOption
-                            {
-                                Text = "I'm looking for something special.",
-                                NextDialogId = Guid.NewGuid(),
-                                Requirements = new Dictionary<string, string>
-                                {
-                                    { "MinLevel", "2" }
-                                }
-                            }
-                        }
                     }
                 }
             };
