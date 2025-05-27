@@ -78,10 +78,146 @@ namespace DnDAdventure.API.Controllers
             return BadRequest("Failed to save game");
         }
         
+        [HttpPost("import")]
+        public ActionResult<World> ImportFromJson([FromBody] ImportJsonRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.JsonContent))
+            {
+                return BadRequest("JSON content is required");
+            }
+            
+            try
+            {
+                // Create a temporary file to use the existing LoadFromJson method
+                var tempFileName = Path.GetTempFileName();
+                System.IO.File.WriteAllText(tempFileName, request.JsonContent);
+                
+                if (_worldService.LoadWorld(tempFileName))
+                {
+                    // Clean up temp file
+                    System.IO.File.Delete(tempFileName);
+                    
+                    return Ok(_worldService.CurrentWorld);
+                }
+                
+                // Clean up temp file on failure
+                System.IO.File.Delete(tempFileName);
+                return BadRequest("Failed to import JSON - invalid format or structure");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to import JSON: {ex.Message}");
+            }
+        }
+        
+        [HttpPost("import-file")]
+        public async Task<ActionResult<World>> ImportFromFile(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file provided");
+            }
+            
+            if (!file.FileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest("File must be a JSON file");
+            }
+            
+            try
+            {
+                using var reader = new StreamReader(file.OpenReadStream());
+                var jsonContent = await reader.ReadToEndAsync();
+                
+                // Create a temporary file to use the existing LoadFromJson method
+                var tempFileName = Path.GetTempFileName();
+                await System.IO.File.WriteAllTextAsync(tempFileName, jsonContent);
+                
+                if (_worldService.LoadWorld(tempFileName))
+                {
+                    // Clean up temp file
+                    System.IO.File.Delete(tempFileName);
+                    
+                    return Ok(_worldService.CurrentWorld);
+                }
+                
+                // Clean up temp file on failure
+                System.IO.File.Delete(tempFileName);
+                return BadRequest("Failed to import file - invalid JSON format or structure");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to import file: {ex.Message}");
+            }
+        }
+        
+        [HttpPost("validate-json")]
+        public ActionResult<ValidationResult> ValidateJson([FromBody] ImportJsonRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.JsonContent))
+            {
+                return BadRequest("JSON content is required");
+            }
+            
+            try
+            {
+                // Try to deserialize without actually loading into the service
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                    PropertyNameCaseInsensitive = true
+                };
+                
+                var testWorld = System.Text.Json.JsonSerializer.Deserialize<World>(request.JsonContent, options);
+                
+                if (testWorld != null)
+                {
+                    var result = new ValidationResult
+                    {
+                        IsValid = true,
+                        WorldName = testWorld.Name,
+                        CharacterCount = testWorld.Characters.Count,
+                        MapCount = testWorld.Maps.Count,
+                        NPCCount = testWorld.NPCs.Count,
+                        Message = "JSON is valid and ready for import"
+                    };
+                    
+                    return Ok(result);
+                }
+                
+                return Ok(new ValidationResult
+                {
+                    IsValid = false,
+                    Message = "JSON structure is invalid"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new ValidationResult
+                {
+                    IsValid = false,
+                    Message = $"JSON validation failed: {ex.Message}"
+                });
+            }
+        }
+        
         public class SaveGameRequest
         {
             public string WorldName { get; set; } = string.Empty;
         }
+        
+        public class ImportJsonRequest
+        {
+            public string JsonContent { get; set; } = string.Empty;
+        }
+        
+        public class ValidationResult
+        {
+            public bool IsValid { get; set; }
+            public string WorldName { get; set; } = string.Empty;
+            public int CharacterCount { get; set; }
+            public int MapCount { get; set; }
+            public int NPCCount { get; set; }
+            public string Message { get; set; } = string.Empty;
+        }
     }
 }
-

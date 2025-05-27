@@ -1,6 +1,7 @@
 // DnDAdventure.Infrastructure/Services/WorldService.cs
 using DnDAdventure.Core.Models;
 using DnDAdventure.Core.Services;
+using System.Text.Json;
 
 namespace DnDAdventure.Infrastructure.Services
 {
@@ -112,6 +113,68 @@ namespace DnDAdventure.Infrastructure.Services
         }
         
         /// <summary>
+        /// Loads a world from JSON content string
+        /// </summary>
+        /// <param name="jsonContent">The JSON content as a string</param>
+        /// <returns>True if loading succeeded, false otherwise</returns>
+        public bool LoadWorldFromJson(string jsonContent)
+        {
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var loadedWorld = JsonSerializer.Deserialize<World>(jsonContent, options);
+                
+                if (loadedWorld != null)
+                {
+                    _currentWorld = loadedWorld;
+                    return true;
+                }
+                
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading world from JSON: {ex.Message}");
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// Validates JSON content without loading it
+        /// </summary>
+        /// <param name="jsonContent">The JSON content to validate</param>
+        /// <returns>Validation result with details</returns>
+        public (bool IsValid, string Message, World? World) ValidateJsonContent(string jsonContent)
+        {
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var testWorld = JsonSerializer.Deserialize<World>(jsonContent, options);
+                
+                if (testWorld != null)
+                {
+                    return (true, "JSON is valid and ready for import", testWorld);
+                }
+                
+                return (false, "JSON structure is invalid", null);
+            }
+            catch (Exception ex)
+            {
+                return (false, $"JSON validation failed: {ex.Message}", null);
+            }
+        }
+        
+        /// <summary>
         /// Gets a list of available save files
         /// </summary>
         /// <returns>List of save file metadata</returns>
@@ -133,14 +196,18 @@ namespace DnDAdventure.Infrastructure.Services
                         string jsonStart = ReadJsonStart(file, 1000); // Read first 1000 chars
                         
                         string worldName = ExtractJsonValue(jsonStart, "name") ?? "Unknown World";
+                        string description = ExtractJsonValue(jsonStart, "description") ?? "";
                         string timestamp = ExtractJsonValue(jsonStart, "lastSavedAt") ?? fileInfo.LastWriteTime.ToString();
+                        string createdAt = ExtractJsonValue(jsonStart, "createdAt") ?? fileInfo.CreationTime.ToString();
                         
                         saveFiles.Add(new SaveFileInfo
                         {
                             FilePath = file,
                             FileName = fileInfo.Name,
                             WorldName = worldName,
+                            Description = description,
                             LastSaved = DateTime.TryParse(timestamp, out var date) ? date : fileInfo.LastWriteTime,
+                            CreatedAt = DateTime.TryParse(createdAt, out var createDate) ? createDate : fileInfo.CreationTime,
                             FileSize = fileInfo.Length,
                             FormattedSize = FormatFileSize(fileInfo.Length)
                         });
@@ -153,7 +220,9 @@ namespace DnDAdventure.Infrastructure.Services
                             FilePath = file,
                             FileName = fileInfo.Name,
                             WorldName = Path.GetFileNameWithoutExtension(file),
+                            Description = "",
                             LastSaved = fileInfo.LastWriteTime,
+                            CreatedAt = fileInfo.CreationTime,
                             FileSize = fileInfo.Length,
                             FormattedSize = FormatFileSize(fileInfo.Length)
                         });

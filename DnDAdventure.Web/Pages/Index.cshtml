@@ -4,42 +4,151 @@
     ViewData["Title"] = "D&D Adventure";
 }
 
-<div class="text-center">
-    <h1 class="display-4">D&D Choose Your Adventure</h1>
-    <p>Create your character and begin your adventure!</p>
-</div>
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4">D&D Choose Your Adventure</h1>
+        <p class="lead">Create your character, choose your world, and begin your adventure!</p>
+    </div>
 
-<div id="character-creation">
-    <h2>Create Your Character</h2>
-    <form id="character-form" class="row g-3">
-        <div class="col-md-6">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" required>
+    <!-- World Selection -->
+    <div id="world-selection" class="mb-5">
+        <h2>Select Your World</h2>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="world-select" class="form-label">Choose World</label>
+                            <select class="form-select" id="world-select" required>
+                                <option value="" selected disabled>Select a World</option>
+                                <option value="new">Create New World</option>
+                                <!-- Existing worlds will be populated via JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <!-- New World Form (initially hidden) -->
+                        <div id="new-world-form" style="display: none;">
+                            <div class="mb-3">
+                                <label for="world-name" class="form-label">World Name</label>
+                                <input type="text" class="form-control" id="world-name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="world-description" class="form-label">World Description</label>
+                                <textarea class="form-control" id="world-description" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">World Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="world-info">
+                            <p class="text-muted">Select a world to view details</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-3">
-            <label for="race" class="form-label">Race</label>
-            <select class="form-select" id="race" required>
-                <option value="" selected disabled>Select Race</option>
-                <option value="Human">Human</option>
-                <option value="Elf">Elf</option>
-                <option value="Dwarf">Dwarf</option>
-                <option value="Halfling">Halfling</option>
-            </select>
+    </div>
+
+    <!-- Import/Export -->
+    <div id="import-export" class="mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Import/Export Data</h5>
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="import-file" accept=".json">
+                            <button class="btn btn-primary" type="button" id="btn-import">Import</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button type="button" class="btn btn-secondary" id="btn-export">Export Current Data</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-3">
-            <label for="class" class="form-label">Class</label>
-            <select class="form-select" id="class" required>
-                <option value="" selected disabled>Select Class</option>
-                <option value="Warrior">Warrior</option>
-                <option value="Mage">Mage</option>
-                <option value="Rogue">Rogue</option>
-                <option value="Cleric">Cleric</option>
-            </select>
+    </div>
+
+    <!-- Character Creation -->
+    <div id="character-creation" class="mb-5">
+        <h2>Create Your Character</h2>
+        <form id="character-form" class="row g-3">
+            <div class="col-md-6">
+                <label for="name" class="form-label">Character Name</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="col-md-3">
+                <label for="race" class="form-label">Race</label>
+                <select class="form-select" id="race" required>
+                    <option value="" selected disabled>Select Race</option>
+                    <option value="Human">Human</option>
+                    <option value="Elf">Elf</option>
+                    <option value="Dwarf">Dwarf</option>
+                    <option value="Halfling">Halfling</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="class" class="form-label">Class</label>
+                <select class="form-select" id="class" required>
+                    <option value="" selected disabled>Select Class</option>
+                    <option value="Warrior">Warrior</option>
+                    <option value="Mage">Mage</option>
+                    <option value="Rogue">Rogue</option>
+                    <option value="Cleric">Cleric</option>
+                </select>
+            </div>
+            
+            <!-- Attribute Preview -->
+            <div class="col-12 mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Character Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Base Attributes</h6>
+                                <ul class="list-group" id="attribute-preview">
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>Strength</span>
+                                        <span id="str-value">10</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>Dexterity</span>
+                                        <span id="dex-value">10</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>Constitution</span>
+                                        <span id="con-value">10</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Starting Equipment</h6>
+                                <ul class="list-group" id="equipment-preview">
+                                    <li class="list-group-item text-muted">Select a class to view starting equipment</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <button type="button" class="btn btn-secondary me-2" id="btn-export">Export to JSON</button>
+            <button type="submit" class="btn btn-primary" id="btn-begin">Begin Adventure</button>
         </div>
-        <div class="col-12">
-            <button type="submit" class="btn btn-primary">Begin Adventure</button>
-        </div>
-    </form>
+    </div>
 </div>
 
 <div id="adventure" class="mt-4" style="display: none;">
@@ -138,6 +247,167 @@
         const apiBaseUrl = '@Model.ApiBaseUrl';
         let gameStateId = '';
         let character = null;
+        
+        // World selection handling
+        const worldSelect = document.getElementById('world-select');
+        const newWorldForm = document.getElementById('new-world-form');
+        const worldInfo = document.getElementById('world-info');
+        
+        // Character creation handling
+        const characterForm = document.getElementById('character-form');
+        const raceSelect = document.getElementById('race');
+        const classSelect = document.getElementById('class');
+        
+        // Load available worlds
+        async function loadWorlds() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/world/available`);
+                const worlds = await response.json();
+                
+                worlds.forEach(world => {
+                    const option = document.createElement('option');
+                    option.value = world.id;
+                    option.textContent = world.name;
+                    worldSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading worlds:', error);
+            }
+        }
+        
+        // Handle world selection change
+        worldSelect.addEventListener('change', async (e) => {
+            const selectedValue = e.target.value;
+            newWorldForm.style.display = selectedValue === 'new' ? 'block' : 'none';
+            
+            if (selectedValue !== 'new' && selectedValue !== '') {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/api/world/${selectedValue}`);
+                    const worldDetails = await response.json();
+                    
+                    worldInfo.innerHTML = `
+                        <h6>${worldDetails.name}</h6>
+                        <p>${worldDetails.description}</p>
+                        <small class="text-muted">Created: ${new Date(worldDetails.createdAt).toLocaleDateString()}</small>
+                        <hr>
+                        <div class="mt-2">
+                            <strong>Active Characters:</strong> ${worldDetails.characters.length}<br>
+                            <strong>Available Quests:</strong> ${Object.keys(worldDetails.quests).length}<br>
+                            <strong>Locations:</strong> ${Object.keys(worldDetails.locations).length}
+                        </div>
+                    `;
+                } catch (error) {
+                    console.error('Error loading world details:', error);
+                }
+            }
+        });
+        
+        // Update attribute preview based on race selection
+        raceSelect.addEventListener('change', (e) => {
+            const race = e.target.value;
+            const baseStr = 10;
+            const baseDex = 10;
+            const baseCon = 10;
+            
+            // Apply racial bonuses
+            switch (race) {
+                case 'Human':
+                    document.getElementById('str-value').textContent = baseStr + 1;
+                    document.getElementById('dex-value').textContent = baseDex + 1;
+                    document.getElementById('con-value').textContent = baseCon + 1;
+                    break;
+                case 'Elf':
+                    document.getElementById('str-value').textContent = baseStr;
+                    document.getElementById('dex-value').textContent = baseDex + 2;
+                    document.getElementById('con-value').textContent = baseCon;
+                    break;
+                case 'Dwarf':
+                    document.getElementById('str-value').textContent = baseStr + 1;
+                    document.getElementById('dex-value').textContent = baseDex;
+                    document.getElementById('con-value').textContent = baseCon + 2;
+                    break;
+                case 'Halfling':
+                    document.getElementById('str-value').textContent = baseStr;
+                    document.getElementById('dex-value').textContent = baseDex + 2;
+                    document.getElementById('con-value').textContent = baseCon;
+                    break;
+            }
+        });
+        
+        // Update equipment preview based on class selection
+        classSelect.addEventListener('change', (e) => {
+            const characterClass = e.target.value;
+            const equipmentList = document.getElementById('equipment-preview');
+            
+            let equipment = [];
+            switch (characterClass) {
+                case 'Warrior':
+                    equipment = ['Longsword', 'Shield', 'Chain Mail', 'Explorer\'s Pack'];
+                    break;
+                case 'Mage':
+                    equipment = ['Staff', 'Spellbook', 'Component Pouch', 'Scholar\'s Pack'];
+                    break;
+                case 'Rogue':
+                    equipment = ['Shortsword', 'Leather Armor', 'Thieves\' Tools', 'Burglar\'s Pack'];
+                    break;
+                case 'Cleric':
+                    equipment = ['Mace', 'Scale Mail', 'Holy Symbol', 'Priest\'s Pack'];
+                    break;
+            }
+            
+            equipmentList.innerHTML = equipment.map(item => 
+                `<li class="list-group-item">${item}</li>`
+            ).join('');
+        });
+        
+        // Export character and world data to JSON
+        document.getElementById('btn-export').addEventListener('click', async () => {
+            const characterData = {
+                name: document.getElementById('name').value,
+                race: document.getElementById('race').value,
+                class: document.getElementById('class').value,
+                attributes: {
+                    Strength: parseInt(document.getElementById('str-value').textContent),
+                    Dexterity: parseInt(document.getElementById('dex-value').textContent),
+                    Constitution: parseInt(document.getElementById('con-value').textContent)
+                }
+            };
+            
+            const worldId = worldSelect.value;
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/game/export`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        character: characterData,
+                        worldId: worldId === 'new' ? null : worldId,
+                        newWorld: worldId === 'new' ? {
+                            name: document.getElementById('world-name').value,
+                            description: document.getElementById('world-description').value
+                        } : null
+                    })
+                });
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'dnd-adventure-export.json';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                alert('Failed to export data. See console for details.');
+            }
+        });
+        
+        // Initialize
+        loadWorlds();
         
         document.getElementById('character-form').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -719,6 +989,96 @@
             }
         }
 
-        // Add other functions for NPC interaction, entering structures, etc.
+        // Add this new import handling code
+        document.getElementById('btn-import').addEventListener('click', async () => {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file to import');
+                return;
+            }
+            
+            try {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        // Validate the imported data structure
+                        if (!importedData.character || !importedData.world) {
+                            throw new Error('Invalid import file structure');
+                        }
+                        
+                        // Import world data first
+                        const worldResponse = await fetch(`${apiBaseUrl}/api/world/import`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(importedData.world)
+                        });
+                        
+                        if (!worldResponse.ok) {
+                            throw new Error('Failed to import world data');
+                        }
+                        
+                        const worldResult = await worldResponse.json();
+                        
+                        // Import character data
+                        const characterResponse = await fetch(`${apiBaseUrl}/api/character/import`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                ...importedData.character,
+                                worldId: worldResult.id // Link character to the imported world
+                            })
+                        });
+                        
+                        if (!characterResponse.ok) {
+                            throw new Error('Failed to import character data');
+                        }
+                        
+                        // Refresh the world list
+                        await loadWorlds();
+                        
+                        // Select the imported world
+                        worldSelect.value = worldResult.id;
+                        // Trigger the change event to update the UI
+                        worldSelect.dispatchEvent(new Event('change'));
+                        
+                        // Populate character form with imported data
+                        populateCharacterForm(importedData.character);
+                        
+                        alert('Import successful!');
+                    } catch (error) {
+                        console.error('Error processing import:', error);
+                        alert('Failed to process import file. Please check the file format.');
+                    }
+                };
+                
+                reader.readAsText(file);
+            } catch (error) {
+                console.error('Error reading import file:', error);
+                alert('Failed to read import file');
+            }
+        });
+        
+        // Helper function to populate character form with imported data
+        function populateCharacterForm(characterData) {
+            document.getElementById('name').value = characterData.name;
+            document.getElementById('race').value = characterData.race;
+            document.getElementById('class').value = characterData.class;
+            
+            // Update attribute display
+            document.getElementById('str-value').textContent = characterData.attributes.Strength;
+            document.getElementById('dex-value').textContent = characterData.attributes.Dexterity;
+            document.getElementById('con-value').textContent = characterData.attributes.Constitution;
+            
+            // Trigger class change to update equipment preview
+            document.getElementById('class').dispatchEvent(new Event('change'));
+        }
     </script>
 }

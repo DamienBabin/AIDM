@@ -10,6 +10,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - AI:Endpoint=http://localhost:8080/generate
+    restart: unless-stopped
 
   web:
     build:
@@ -20,9 +21,10 @@ services:
       - "5001:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiBaseUrl=http://api
+      - ApiBaseUrl=http://localhost:5000
     depends_on:
       - api
+    restart: unless-stopped
 
   # Development container for working on the project
   dev:

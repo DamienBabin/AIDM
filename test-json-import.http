@@ -1,0 +1,31 @@
+### Test JSON Import Functionality
+
+# 1. Validate the Test.json file
+POST http://localhost:5000/api/save/validate-json
+Content-Type: application/json
+
+{
+  "jsonContent": "{\n  \"character\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"name\": \"Theron Silvermane\",\n    \"race\": \"Elf\",\n    \"class\": \"Mage\",\n    \"level\": 1,\n    \"healthPoints\": 8,\n    \"maxHealthPoints\": 8,\n    \"attributes\": {\n      \"Strength\": 10,\n      \"Dexterity\": 12,\n      \"Constitution\": 10,\n      \"Intelligence\": 16,\n      \"Wisdom\": 14,\n      \"Charisma\": 12\n    },\n    \"inventory\": [\n      \"Staff\",\n      \"Spellbook\",\n      \"Component Pouch\",\n      \"Scholar's Pack\",\n      \"3 Health Potions\"\n    ]\n  },\n  \"world\": {\n    \"id\": \"7b8e8000-c2a1-4c61-b556-447755550000\",\n    \"name\": \"Realm of the Crystal Spire\",\n    \"description\": \"A mystical land where a mysterious crystal spire dominates the skyline, its presence affecting magic throughout the realm.\",\n    \"createdAt\": \"2024-03-20T10:30:00Z\",\n    \"lastSavedAt\": \"2024-03-20T10:30:00Z\",\n    \"locations\": {\n      \"Northaven Village\": \"A peaceful trading village nestled in the shadow of the Crystal Spire\",\n      \"Mystic Forest\": \"An ancient woodland where magical creatures dwell\",\n      \"Crystal Spire Base\": \"The mysterious foundation of the towering crystal structure\",\n      \"Dwarven Mines\": \"Rich mineral deposits worked by skilled dwarven miners\"\n    },\n    \"quests\": {\n      \"crystal-resonance\": \"Investigate the unusual magical resonance emanating from the Crystal Spire\",\n      \"missing-merchant\": \"Find the missing merchant who disappeared on the road to Northaven\",\n      \"dwarven-artifact\": \"Recover an ancient dwarven artifact from the mines\"\n    }\n  }\n}"
+}
+
+###
+
+# 2. Import JSON content directly
+POST http://localhost:5000/api/save/import
+Content-Type: application/json
+
+{
+  "jsonContent": "{\n  \"character\": {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"name\": \"Theron Silvermane\",\n    \"race\": \"Elf\",\n    \"class\": \"Mage\",\n    \"level\": 1,\n    \"healthPoints\": 8,\n    \"maxHealthPoints\": 8,\n    \"attributes\": {\n      \"Strength\": 10,\n      \"Dexterity\": 12,\n      \"Constitution\": 10,\n      \"Intelligence\": 16,\n      \"Wisdom\": 14,\n      \"Charisma\": 12\n    },\n    \"inventory\": [\n      \"Staff\",\n      \"Spellbook\",\n      \"Component Pouch\",\n      \"Scholar's Pack\",\n      \"3 Health Potions\"\n    ]\n  },\n  \"world\": {\n    \"id\": \"7b8e8000-c2a1-4c61-b556-447755550000\",\n    \"name\": \"Realm of the Crystal Spire\",\n    \"description\": \"A mystical land where a mysterious crystal spire dominates the skyline, its presence affecting magic throughout the realm.\",\n    \"createdAt\": \"2024-03-20T10:30:00Z\",\n    \"lastSavedAt\": \"2024-03-20T10:30:00Z\",\n    \"locations\": {\n      \"Northaven Village\": \"A peaceful trading village nestled in the shadow of the Crystal Spire\",\n      \"Mystic Forest\": \"An ancient woodland where magical creatures dwell\",\n      \"Crystal Spire Base\": \"The mysterious foundation of the towering crystal structure\",\n      \"Dwarven Mines\": \"Rich mineral deposits worked by skilled dwarven miners\"\n    },\n    \"quests\": {\n      \"crystal-resonance\": \"Investigate the unusual magical resonance emanating from the Crystal Spire\",\n      \"missing-merchant\": \"Find the missing merchant who disappeared on the road to Northaven\",\n      \"dwarven-artifact\": \"Recover an ancient dwarven artifact from the mines\"\n    }\n  }\n}"
+}
+
+###
+
+# 3. Get available saves (should show imported world)
+GET http://localhost:5000/api/save
+
+###
+
+# 4. Create a quick save of the imported world
+POST http://localhost:5000/api/save/quicksave
+
+###

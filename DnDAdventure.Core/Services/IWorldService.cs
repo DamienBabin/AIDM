@@ -11,8 +11,10 @@ namespace DnDAdventure.Core.Services
         public string FileName { get; set; } = string.Empty;
         public string WorldName { get; set; } = string.Empty;
         public DateTime LastSaved { get; set; }
+        public DateTime CreatedAt { get; set; }
         public long FileSize { get; set; }
         public string FormattedSize { get; set; } = string.Empty;
+        public string? Description { get; set; }
     }
 
     public interface IWorldService
@@ -20,8 +22,9 @@ namespace DnDAdventure.Core.Services
         World CurrentWorld { get; }
         World CreateNewWorld(string name, string description = "");
         bool LoadWorld(string filePath);
+        bool LoadWorldFromJson(string jsonContent);
         string? SaveWorld(string? worldName = null);
         string? CreateQuickSave();
         List<SaveFileInfo> GetAvailableSaves();
     }
-} 
+}
