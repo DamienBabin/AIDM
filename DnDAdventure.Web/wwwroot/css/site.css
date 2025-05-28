@@ -1,5 +1,47 @@
+/* D&D 5e Tavern-Style Adventure Styling - Matte Edition */
+
+:root {
+  /* Matte Tavern Color Palette */
+  --tavern-wood: #6B4423;
+  --tavern-dark-wood: #4A2C17;
+  --tavern-brass: #8B7355;
+  --tavern-copper: #8B6F47;
+  --tavern-iron: #5A5A5A;
+  
+  /* Matte Earth Tones */
+  --warm-cream: #F0EDE5;
+  --parchment: #E8E0D0;
+  --aged-paper: #DDD5C0;
+  --leather-brown: #6B4423;
+  --deep-burgundy: #5C1A1A;
+  
+  /* Muted Firelight Colors */
+  --flame-orange: #B8704F;
+  --ember-red: #8B3A3A;
+  --candle-yellow: #C4A572;
+  --hearth-glow: #B8956F;
+  
+  /* Matte Stone and Metal */
+  --stone-gray: #6B6B6B;
+  --dark-stone: #3A3A3A;
+  --pewter: #7A7A7A;
+  
+  /* Matte Text Colors */
+  --text-dark: #2A1F17;
+  --text-light: #F0EDE5;
+  --text-ember: #8B3A3A;
+  
+  /* Matte Interactive Colors */
+  --hover-brass: #9B8366;
+  --hover-copper: #9B7F58;
+  --shadow-warm: rgba(107, 68, 35, 0.2);
+  --shadow-deep: rgba(42, 31, 23, 0.3);
+}
+
 html {
   font-size: 14px;
+  background: linear-gradient(135deg, var(--aged-paper) 0%, var(--leather-brown) 100%);
+  min-height: 100vh;
 }
 
 @media (min-width: 768px) {
@@ -8,24 +50,940 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background: transparent;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Enhanced Focus Styles */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem var(--warm-cream), 0 0 0 0.25rem var(--tavern-brass);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* Typography Enhancements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: var(--deep-burgundy);
+  text-shadow: 1px 1px 2px rgba(107, 68, 35, 0.2);
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.display-4 {
+  color: var(--deep-burgundy);
+  font-weight: bold;
+  font-size: 3rem;
+  text-shadow: 2px 2px 4px rgba(107, 68, 35, 0.3);
+  margin-bottom: 1rem;
+}
+
+.lead {
+  color: var(--text-dark);
+  font-style: italic;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+/* Card Enhancements - Matte Tavern Style */
+.card {
+  background: linear-gradient(145deg, var(--warm-cream) 0%, var(--parchment) 100%);
+  border: 2px solid var(--tavern-wood);
+  border-radius: 12px;
+  box-shadow: 0 6px 12px var(--shadow-deep);
+  transition: all 0.3s ease;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--tavern-wood), var(--tavern-brass), var(--tavern-wood));
+  border-radius: 12px 12px 0 0;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px var(--shadow-deep);
+  border-color: var(--tavern-brass);
+}
+
+.card-header {
+  background: linear-gradient(135deg, var(--tavern-wood), var(--tavern-dark-wood));
+  color: var(--text-light);
+  border-bottom: 2px solid var(--tavern-brass);
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  border-radius: 10px 10px 0 0;
+  padding: 1rem 1.5rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Button Enhancements - Matte Medieval Style */
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  border-width: 2px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  padding: 0.75rem 1.5rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--tavern-wood), var(--tavern-dark-wood));
+  border: 2px solid var(--tavern-brass);
+  color: var(--text-light);
+  box-shadow: 0 3px 6px rgba(107, 68, 35, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--tavern-dark-wood), var(--leather-brown));
+  border-color: var(--hover-brass);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(107, 68, 35, 0.4);
+  color: var(--text-light);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--stone-gray), var(--dark-stone));
+  border: 2px solid var(--pewter);
+  color: var(--text-light);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, var(--pewter), var(--stone-gray));
+  transform: translateY(-2px);
+  color: var(--text-light);
+}
+
+.btn-outline-primary {
+  border: 2px solid var(--tavern-wood);
+  color: var(--tavern-wood);
+  background: rgba(240, 237, 229, 0.8);
+}
+
+.btn-outline-primary:hover {
+  background: var(--tavern-wood);
+  color: var(--text-light);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(107, 68, 35, 0.3);
+}
+
+/* Form Enhancements */
+.form-control, .form-select {
+  border: 2px solid var(--tavern-brass);
+  border-radius: 8px;
+  background: rgba(240, 237, 229, 0.9);
+  transition: all 0.3s ease;
+  color: var(--text-dark);
+  padding: 0.75rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--ember-red);
+  box-shadow: 0 0 0 0.2rem rgba(139, 58, 58, 0.2);
+  background: var(--warm-cream);
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--deep-burgundy);
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+/* List Group Enhancements */
+.list-group-item {
+  border: 1px solid var(--tavern-brass);
+  background: rgba(240, 237, 229, 0.9);
+  transition: all 0.3s ease;
+  color: var(--text-dark);
+  margin-bottom: 0.25rem;
+  border-radius: 6px;
+}
+
+.list-group-item:hover {
+  background: rgba(139, 115, 85, 0.1);
+  transform: translateX(5px);
+  border-color: var(--tavern-copper);
+}
+
+/* Navigation Tabs Enhancement */
+.nav-tabs {
+  border-bottom: 3px solid var(--tavern-wood);
+  margin-bottom: 1rem;
+}
+
+.nav-tabs .nav-link {
+  border: 2px solid transparent;
+  border-radius: 8px 8px 0 0;
+  color: var(--tavern-wood);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  background: rgba(240, 237, 229, 0.7);
+  margin-right: 0.25rem;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: var(--tavern-brass);
+  background: rgba(139, 115, 85, 0.1);
+}
+
+.nav-tabs .nav-link.active {
+  background: linear-gradient(135deg, var(--tavern-brass), var(--tavern-copper));
+  border-color: var(--tavern-wood);
+  color: var(--text-light);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Adventure-specific Enhancements */
+#adventure {
+  background: linear-gradient(135deg, rgba(240, 237, 229, 0.95), rgba(232, 224, 208, 0.95));
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 16px var(--shadow-deep);
+  border: 2px solid var(--tavern-wood);
+  margin-top: 2rem;
+}
+
+#description {
+  background: rgba(240, 237, 229, 0.9);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--tavern-brass);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+}
+
+#choices .btn {
+  margin: 0.5rem 0;
+  padding: 1rem;
+  text-align: left;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(240, 237, 229, 0.9), rgba(232, 224, 208, 0.9));
+  border: 2px solid var(--tavern-brass);
+  color: var(--text-dark);
+  font-weight: 500;
+  width: 100%;
+}
+
+#choices .btn:hover {
+  background: linear-gradient(135deg, var(--tavern-brass), var(--tavern-copper));
+  color: var(--text-light);
+  transform: translateX(8px);
+  box-shadow: 0 4px 8px rgba(107, 68, 35, 0.3);
+}
+
+/* Character Panel Enhancements */
+#char-name {
+  color: var(--deep-burgundy);
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(107, 68, 35, 0.3);
+}
+
+#char-details {
+  background: rgba(139, 115, 85, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid var(--tavern-brass);
+  color: var(--text-dark);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* Map Enhancements */
+#map-display {
+  background: linear-gradient(135deg, #2a2a2a, #3a3a3a) !important;
+  color: var(--candle-yellow);
+  border: 3px solid var(--tavern-wood);
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+}
+
+/* POI Card Enhancements */
+.poi-card {
+  border: 2px solid var(--tavern-copper);
+  background: linear-gradient(135deg, rgba(139, 111, 71, 0.1), rgba(240, 237, 229, 0.9));
+  margin-bottom: 1rem;
+}
+
+.poi-card:hover {
+  border-color: var(--candle-yellow);
+  background: linear-gradient(135deg, rgba(196, 165, 114, 0.1), rgba(240, 237, 229, 0.9));
+  box-shadow: 0 4px 8px rgba(139, 111, 71, 0.3);
+}
+
+/* NPC Dialog Enhancements */
+.npc-dialog {
+  background: linear-gradient(135deg, rgba(92, 26, 26, 0.1), rgba(240, 237, 229, 0.9));
+  border: 2px solid var(--deep-burgundy);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.npc-dialog h5 {
+  color: var(--deep-burgundy);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+}
+
+/* Animation Classes - Simplified */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Remove the moving/pulsing animation */
+.pulse-gold {
+  /* No animation - static styling only */
+}
+
+/* Interactive Elements */
+.interactive-hover {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.interactive-hover:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+/* Badge Enhancements */
+.badge {
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  text-shadow: none;
+  margin: 0.25rem;
+}
+
+.badge.bg-primary {
+  background: var(--tavern-wood) !important;
+  border: 1px solid var(--tavern-brass);
+}
+
+.badge.bg-success {
+  background: var(--tavern-copper) !important;
+  border: 1px solid var(--tavern-brass);
+}
+
+.badge.bg-warning {
+  background: var(--candle-yellow) !important;
+  color: var(--text-dark) !important;
+  border: 1px solid var(--tavern-wood);
+}
+
+/* Container and Layout Fixes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.row {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.col, .col-md-3, .col-md-4, .col-md-6, .col-md-8, .col-12 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 1rem;
+  }
+  
+  #adventure {
+    padding: 1rem;
+  }
+  
+  .btn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+  
+  .display-4 {
+    font-size: 2rem;
+  }
+  
+  .container {
+    padding: 0 10px;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--aged-paper);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--tavern-wood), var(--tavern-brass));
+  border-radius: 6px;
+  border: 2px solid var(--aged-paper);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--tavern-brass), var(--tavern-copper));
+}
+
+/* Loading Animation */
+.loading-spinner {
+  border: 4px solid var(--aged-paper);
+  border-top: 4px solid var(--tavern-brass);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Section-specific Enhancements */
+#character-creation .card {
+  background: linear-gradient(135deg, rgba(107, 68, 35, 0.03), rgba(240, 237, 229, 0.95));
+  border-color: var(--tavern-wood);
+}
+
+#world-selection .card {
+  background: linear-gradient(135deg, rgba(92, 26, 26, 0.03), rgba(240, 237, 229, 0.95));
+  border-color: var(--deep-burgundy);
+}
+
+#import-export .card {
+  background: linear-gradient(135deg, rgba(139, 111, 71, 0.03), rgba(240, 237, 229, 0.95));
+  border-color: var(--tavern-copper);
+}
+
+/* Step-by-step Character Creation Enhancements */
+#character-creation .card-header h4 {
+  color: var(--text-light);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+/* Information Panel Styling */
+#race-info-panel, #class-info-panel {
+  background: linear-gradient(135deg, rgba(139, 115, 85, 0.08), rgba(240, 237, 229, 0.95)) !important;
+  border: 2px solid var(--tavern-brass) !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(107, 68, 35, 0.2);
+  transition: all 0.3s ease;
+}
+
+#race-info-panel:hover, #class-info-panel:hover {
+  box-shadow: 0 6px 12px rgba(107, 68, 35, 0.3);
+  transform: translateY(-2px);
+}
+
+#race-info-panel h6, #class-info-panel h6 {
+  color: var(--deep-burgundy);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--tavern-brass);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Ability Score Panel Enhancements */
+#ability-score-panel .card-header {
+  background: linear-gradient(135deg, var(--tavern-brass), var(--tavern-copper));
+  color: var(--text-light);
+  border-bottom: 2px solid var(--tavern-wood);
+}
+
+#ability-score-panel .card-body {
+  background: linear-gradient(135deg, rgba(240, 237, 229, 0.95), rgba(232, 224, 208, 0.95));
+}
+
+/* Point Buy System Styling */
+.point-buy-input {
+  font-weight: bold;
+  color: var(--deep-burgundy);
+  background: rgba(240, 237, 229, 0.9) !important;
+}
+
+.point-buy-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(139, 115, 85, 0.25);
+}
+
+#points-remaining {
+  color: var(--ember-red);
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* Roll Stats Styling */
+.rolled-stat {
+  font-weight: bold;
+  color: var(--deep-burgundy);
+  background: rgba(240, 237, 229, 0.9) !important;
+}
+
+/* Custom Stats Styling */
+.custom-stat {
+  font-weight: bold;
+  color: var(--deep-burgundy);
+}
+
+/* Improved Form Controls */
+.form-select:focus, .form-control:focus {
+  border-color: var(--tavern-brass);
+  box-shadow: 0 0 0 0.2rem rgba(139, 115, 85, 0.25);
+}
+
+/* Enhanced Placeholder Styling */
+.form-control::placeholder {
+  color: var(--stone-gray);
+  font-style: italic;
+}
+
+/* Progress Indicator for Character Creation */
+.character-creation-progress {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(139, 115, 85, 0.1), rgba(240, 237, 229, 0.9));
+  border-radius: 8px;
+  border: 2px solid var(--tavern-brass);
+}
+
+.progress-step {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.progress-step.completed {
+  background: var(--tavern-wood);
+  color: var(--text-light);
+  box-shadow: 0 2px 4px rgba(107, 68, 35, 0.3);
+}
+
+.progress-step.active {
+  background: var(--tavern-brass);
+  color: var(--text-light);
+  box-shadow: 0 4px 8px rgba(139, 115, 85, 0.4);
+  transform: scale(1.05);
+}
+
+.progress-step.pending {
+  background: rgba(240, 237, 229, 0.7);
+  color: var(--stone-gray);
+}
+
+/* Tooltip Styling for Help Text */
+.help-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  color: var(--tavern-brass);
+  margin-left: 0.5rem;
+}
+
+.help-tooltip:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark-stone);
+  color: var(--text-light);
+  padding: 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 1000;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced Button Hover Effects */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Improved Tab Styling */
+.nav-tabs .nav-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-tabs .nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(139, 115, 85, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.nav-tabs .nav-link:hover::before {
+  left: 100%;
+}
+
+/* Character Preview Enhancements */
+#attribute-preview .list-group-item {
+  transition: all 0.3s ease;
+}
+
+#attribute-preview .list-group-item:hover {
+  background: rgba(139, 115, 85, 0.1);
+  transform: translateX(5px);
+}
+
+/* Equipment Preview Styling */
+#equipment-preview .list-group-item {
+  border-left: 4px solid var(--tavern-brass);
+  transition: all 0.3s ease;
+}
+
+#equipment-preview .list-group-item:hover {
+  border-left-color: var(--tavern-copper);
+  background: rgba(139, 111, 71, 0.1);
+}
+
+/* Loading States */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--tavern-brass);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Error States */
+.error-message {
+  background: linear-gradient(135deg, rgba(139, 58, 58, 0.1), rgba(240, 237, 229, 0.9));
+  border: 2px solid var(--ember-red);
+  color: var(--ember-red);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  font-weight: 600;
+}
+
+/* Success States */
+.success-message {
+  background: linear-gradient(135deg, rgba(139, 115, 85, 0.1), rgba(240, 237, 229, 0.9));
+  border: 2px solid var(--tavern-brass);
+  color: var(--tavern-wood);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  font-weight: 600;
+}
+
+/* Mobile Responsiveness Improvements */
+@media (max-width: 768px) {
+  #character-creation .card-header h4 {
+    font-size: 1rem;
+  }
+  
+  .progress-step {
+    font-size: 0.7rem;
+    padding: 0.25rem;
+  }
+  
+  #race-info-panel, #class-info-panel {
+    margin-top: 1rem;
+  }
+  
+  .nav-tabs .nav-link {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .character-creation-progress {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .progress-step {
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Text Selection */
+::selection {
+  background: var(--tavern-brass);
+  color: var(--text-light);
+}
+
+::-moz-selection {
+  background: var(--tavern-brass);
+  color: var(--text-light);
+}
+
+/* Input Group Styling */
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.input-group .form-control {
+  border-right: none;
+}
+
+.input-group .btn {
+  border-left: none;
+}
+
+/* Ensure proper spacing */
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+.mb-5 {
+  margin-bottom: 3rem !important;
+}
+
+.mt-3 {
+  margin-top: 1rem !important;
+}
+
+.mt-4 {
+  margin-top: 1.5rem !important;
+}
+
+/* Text alignment fixes */
+.text-center {
+  text-align: center !important;
+}
+
+.text-end {
+  text-align: right !important;
+}
+
+/* Flexbox utilities */
+.d-flex {
+  display: flex !important;
+}
+
+.justify-content-between {
+  justify-content: space-between !important;
+}
+
+.justify-content-center {
+  justify-content: center !important;
+}
+
+.align-items-center {
+  align-items: center !important;
+}
+
+/* Equipment and Spell Panel Enhancements */
+#equipment-info-panel .badge,
+#spell-info-panel .badge {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+}
+
+#equipment-info-panel .badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  background: var(--tavern-brass) !important;
+  color: var(--text-light);
+}
+
+#spell-info-panel .badge.bg-info:hover {
+  background: var(--candle-yellow) !important;
+  color: var(--text-dark) !important;
+}
+
+#spell-info-panel .badge.bg-primary:hover {
+  background: var(--deep-burgundy) !important;
+  color: var(--text-light) !important;
+}
+
+#selected-equipment-details,
+#selected-spell-details {
+  background: linear-gradient(135deg, rgba(240, 237, 229, 0.95), rgba(232, 224, 208, 0.95));
+  border: 2px solid var(--tavern-brass);
+  min-height: 200px;
+}
+
+#selected-equipment-details h6,
+#selected-spell-details h6 {
+  color: var(--deep-burgundy);
+  border-bottom: 2px solid var(--tavern-brass);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Equipment type badges */
+#weapon-list .badge,
+#armor-list .badge {
+  background: var(--tavern-wood) !important;
+  border: 1px solid var(--tavern-brass);
+  color: var(--text-light);
+}
+
+/* Spell school colors */
+.spell-school-evocation { background: var(--ember-red) !important; }
+.spell-school-abjuration { background: var(--stone-gray) !important; }
+.spell-school-conjuration { background: var(--tavern-copper) !important; }
+.spell-school-divination { background: var(--candle-yellow) !important; color: var(--text-dark) !important; }
+.spell-school-enchantment { background: var(--deep-burgundy) !important; }
+.spell-school-illusion { background: var(--pewter) !important; }
+.spell-school-necromancy { background: var(--dark-stone) !important; }
+.spell-school-transmutation { background: var(--tavern-brass) !important; }
+
+/* Equipment list item hover effects */
+#equipment-preview .list-group-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#equipment-preview .list-group-item:hover {
+  background: rgba(139, 115, 85, 0.2);
+  transform: translateX(5px);
+  border-color: var(--tavern-brass);
+}
+
+/* Race and Class info panels */
+#race-info-panel .list-group-item,
+#class-info-panel .list-group-item {
+  background: rgba(240, 237, 229, 0.7);
+  border-color: var(--tavern-brass);
+}
+
+#race-ability-scores .list-group-item {
+  font-weight: 600;
+}
+
+#race-ability-scores .list-group-item span:last-child {
+  color: var(--ember-red);
+  font-weight: bold;
+}
+
+/* Feature boxes */
+#class-features > div {
+  background: rgba(139, 115, 85, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--tavern-brass);
+}
+
+#class-features h6 {
+  color: var(--deep-burgundy);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/* Racial traits styling */
+#race-traits li {
+  padding: 0.75rem;
+  background: rgba(240, 237, 229, 0.5);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  border-left: 3px solid var(--tavern-copper);
+}
+
+#race-traits li strong {
+  color: var(--deep-burgundy);
+}
+
+/* Equipment item styling for clickable equipment */
+.equipment-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(240, 237, 229, 0.9);
+  border: 2px solid var(--tavern-brass) !important;
+  border-radius: 8px;
+}
+
+.equipment-item:hover {
+  background: rgba(139, 115, 85, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(107, 68, 35, 0.3);
+  border-color: var(--tavern-copper) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

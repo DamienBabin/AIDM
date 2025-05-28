@@ -12,5 +12,8 @@ namespace DnDAdventure.Core.Models
         public List<string> Inventory { get; set; } = new();
         public int HealthPoints { get; set; }
         public int MaxHealthPoints { get; set; }
+        public List<string> Cantrips { get; set; } = new();
+        public List<string> Spells { get; set; } = new();
+        public string? SpellcastingAbility { get; set; }
     }
 }
