@@ -50,9 +50,9 @@ namespace DnDAdventure.API.Controllers
                     MapName = map.Name,
                     X = x,
                     Y = y,
-                    TerrainType = map.Grid[x, y].TerrainType.ToString(),
-                    LocationName = map.Grid[x, y].Name,
-                    Description = map.Grid[x, y].Description
+                    TerrainType = map.Grid[x][y].TerrainType.ToString(),
+                    LocationName = map.Grid[x][y].Name,
+                    Description = map.Grid[x][y].Description
                 });
             }
             catch (Exception ex)
@@ -76,7 +76,7 @@ namespace DnDAdventure.API.Controllers
                 return Ok(new MoveResult
                 {
                     Success = true,
-                    Message = $"Moved to {map?.Grid[x, y].Name ?? "new location"}",
+                    Message = $"Moved to {map?.Grid[x][y].Name ?? "new location"}",
                     NewX = x,
                     NewY = y,
                     NewMapId = map?.Id ?? Guid.Empty,

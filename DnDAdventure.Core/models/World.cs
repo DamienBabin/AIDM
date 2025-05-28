@@ -431,7 +431,7 @@ namespace DnDAdventure.Core.Models
             {
                 if (Maps.TryGetValue(oldPosition.CurrentMapId, out var oldMap))
                 {
-                    oldMap.Grid[oldPosition.X, oldPosition.Y].HasPlayer = false;
+                    oldMap.Grid[oldPosition.X][oldPosition.Y].HasPlayer = false;
                 }
             }
 
@@ -445,7 +445,7 @@ namespace DnDAdventure.Core.Models
             };
 
             // Update the map cell
-            map.Grid[x, y].HasPlayer = true;
+            map.Grid[x][y].HasPlayer = true;
         }
 
         /// <summary>
@@ -470,7 +470,7 @@ namespace DnDAdventure.Core.Models
             if (map == null)
                 return null;
 
-            return map.Grid[position.X, position.Y];
+            return map.Grid[position.X][position.Y];
         }
 
         /// <summary>
@@ -525,4 +525,3 @@ namespace DnDAdventure.Core.Models
         }
     }
 }
-

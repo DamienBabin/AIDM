@@ -111,7 +111,7 @@ namespace DnDAdventure.Infrastructure.Services
                         return false;
 
                     // Check if the entry point is passable
-                    if (!connectedMap.Grid[entryX, entryY].Passable)
+                    if (!connectedMap.Grid[entryX][entryY].Passable)
                         return false;
 
                     // Move to the new map
@@ -124,7 +124,7 @@ namespace DnDAdventure.Infrastructure.Services
             }
 
             // Check if the new position is passable
-            if (!map.Grid[newX, newY].Passable)
+            if (!map.Grid[newX][newY].Passable)
                 return false;
 
             // Update player position
@@ -145,7 +145,7 @@ namespace DnDAdventure.Infrastructure.Services
             if (map == null)
                 return new ExplorationResult { Success = false, Message = "Map not found." };
 
-            var cell = map.Grid[position.X, position.Y];
+            var cell = map.Grid[position.X][position.Y];
 
             var result = new ExplorationResult
             {
@@ -311,7 +311,7 @@ namespace DnDAdventure.Infrastructure.Services
             {
                 for (int y = 0; y < 9; y++)
                 {
-                    var cell = map.Grid[x, y];
+                    var cell = map.Grid[x][y];
                     if (cell.PointOfInterestId != Guid.Empty)
                     {
                         var poi = _worldService.CurrentWorld.PointsOfInterest.TryGetValue(cell.PointOfInterestId, out var poiValue) ? poiValue : null;
@@ -335,4 +335,3 @@ namespace DnDAdventure.Infrastructure.Services
         }
     }
 }
-

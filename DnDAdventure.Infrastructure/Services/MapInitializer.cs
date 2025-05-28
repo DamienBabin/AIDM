@@ -78,27 +78,27 @@ namespace DnDAdventure.Infrastructure.Services
             {
                 for (int y = 0; y < 9; y++)
                 {
-                    map.Grid[x, y].TerrainType = TerrainType.Plains;
-                    map.Grid[x, y].Passable = true;
+                    map.Grid[x][y].TerrainType = TerrainType.Plains;
+                    map.Grid[x][y].Passable = true;
                 }
             }
             
             // Add roads
             for (int x = 0; x < 9; x++)
             {
-                map.Grid[x, 4].TerrainType = TerrainType.Road;
-                map.Grid[x, 4].Description = "A well-traveled dirt road running east to west through the village.";
+                map.Grid[x][4].TerrainType = TerrainType.Road;
+                map.Grid[x][4].Description = "A well-traveled dirt road running east to west through the village.";
             }
             
             for (int y = 0; y < 9; y++)
             {
-                map.Grid[4, y].TerrainType = TerrainType.Road;
-                map.Grid[4, y].Description = "A well-traveled dirt road running north to south through the village.";
+                map.Grid[4][y].TerrainType = TerrainType.Road;
+                map.Grid[4][y].Description = "A well-traveled dirt road running north to south through the village.";
             }
             
             // Village center (town square)
-            map.Grid[4, 4].Name = "Village Square";
-            map.Grid[4, 4].Description = "The central square of Northaven. A notice board stands in the middle, and villagers go about their daily business.";
+            map.Grid[4][4].Name = "Village Square";
+            map.Grid[4][4].Description = "The central square of Northaven. A notice board stands in the middle, and villagers go about their daily business.";
             
             // Tavern
             var tavernStructure = new MapStructure
@@ -110,10 +110,10 @@ namespace DnDAdventure.Infrastructure.Services
             };
             world.AddStructure(tavernStructure);
             
-            map.Grid[2, 3].Name = "Tavern";
-            map.Grid[2, 3].Description = "The Golden Tankard tavern stands here, with a wooden sign depicting a foaming mug.";
-            map.Grid[2, 3].StructureId = tavernStructure.Id;
-            map.Grid[2, 3].TerrainType = TerrainType.Plains;
+            map.Grid[2][3].Name = "Tavern";
+            map.Grid[2][3].Description = "The Golden Tankard tavern stands here, with a wooden sign depicting a foaming mug.";
+            map.Grid[2][3].StructureId = tavernStructure.Id;
+            map.Grid[2][3].TerrainType = TerrainType.Plains;
             
             // Blacksmith
             var smithyStructure = new MapStructure
@@ -125,9 +125,9 @@ namespace DnDAdventure.Infrastructure.Services
             };
             world.AddStructure(smithyStructure);
             
-            map.Grid[6, 3].Name = "Blacksmith";
-            map.Grid[6, 3].Description = "The village smithy stands here, smoke rising from its chimney.";
-            map.Grid[6, 3].StructureId = smithyStructure.Id;
+            map.Grid[6][3].Name = "Blacksmith";
+            map.Grid[6][3].Description = "The village smithy stands here, smoke rising from its chimney.";
+            map.Grid[6][3].StructureId = smithyStructure.Id;
             
             // General store
             var storeStructure = new MapStructure
@@ -139,9 +139,9 @@ namespace DnDAdventure.Infrastructure.Services
             };
             world.AddStructure(storeStructure);
             
-            map.Grid[3, 6].Name = "General Store";
-            map.Grid[3, 6].Description = "The village's general store, selling all manner of goods.";
-            map.Grid[3, 6].StructureId = storeStructure.Id;
+            map.Grid[3][6].Name = "General Store";
+            map.Grid[3][6].Description = "The village's general store, selling all manner of goods.";
+            map.Grid[3][6].StructureId = storeStructure.Id;
             
             // Temple
             var templeStructure = new MapStructure
@@ -153,9 +153,9 @@ namespace DnDAdventure.Infrastructure.Services
             };
             world.AddStructure(templeStructure);
             
-            map.Grid[5, 6].Name = "Temple";
-            map.Grid[5, 6].Description = "A stone temple with stained glass windows that catch the light.";
-            map.Grid[5, 6].StructureId = templeStructure.Id;
+            map.Grid[5][6].Name = "Temple";
+            map.Grid[5][6].Description = "A stone temple with stained glass windows that catch the light.";
+            map.Grid[5][6].StructureId = templeStructure.Id;
             
             // Add NPCs
             
@@ -171,7 +171,7 @@ namespace DnDAdventure.Infrastructure.Services
             };
             
             world.AddNPC(tavernKeeper);
-            map.Grid[2, 3].NPCId = tavernKeeper.Id;
+            map.Grid[2][3].NPCId = tavernKeeper.Id;
             
             // Blacksmith
             var blacksmith = new NPC
@@ -185,7 +185,7 @@ namespace DnDAdventure.Infrastructure.Services
             };
             
             world.AddNPC(blacksmith);
-            map.Grid[6, 3].NPCId = blacksmith.Id;
+            map.Grid[6][3].NPCId = blacksmith.Id;
             
             // Add Points of Interest
             
@@ -211,9 +211,9 @@ namespace DnDAdventure.Infrastructure.Services
             };
             
             world.AddPointOfInterest(wellPOI);
-            map.Grid[4, 5].Name = "Village Well";
-            map.Grid[4, 5].Description = "A stone well with a wooden bucket and rope.";
-            map.Grid[4, 5].PointOfInterestId = wellPOI.Id;
+            map.Grid[4][5].Name = "Village Well";
+            map.Grid[4][5].Description = "A stone well with a wooden bucket and rope.";
+            map.Grid[4][5].PointOfInterestId = wellPOI.Id;
             
             // Notice board
             var noticeBoardPOI = new PointOfInterest
@@ -237,7 +237,7 @@ namespace DnDAdventure.Infrastructure.Services
             };
             
             world.AddPointOfInterest(noticeBoardPOI);
-            map.Grid[4, 4].PointOfInterestId = noticeBoardPOI.Id;
+            map.Grid[4][4].PointOfInterestId = noticeBoardPOI.Id;
         }
         
         private void PopulateForestMap(WorldMap map)
@@ -249,27 +249,27 @@ namespace DnDAdventure.Infrastructure.Services
             {
                 for (int y = 0; y < 9; y++)
                 {
-                    map.Grid[x, y].TerrainType = TerrainType.Forest;
-                    map.Grid[x, y].Passable = true;
-                    map.Grid[x, y].Description = "Dense trees surround you, with dappled sunlight filtering through the canopy.";
+                    map.Grid[x][y].TerrainType = TerrainType.Forest;
+                    map.Grid[x][y].Passable = true;
+                    map.Grid[x][y].Description = "Dense trees surround you, with dappled sunlight filtering through the canopy.";
                 }
             }
             
             // Add a path through the forest
             for (int y = 8; y >= 0; y--)
             {
-                map.Grid[4, y].TerrainType = TerrainType.Road;
-                map.Grid[4, y].Description = "A narrow dirt path winds through the forest.";
+                map.Grid[4][y].TerrainType = TerrainType.Road;
+                map.Grid[4][y].Description = "A narrow dirt path winds through the forest.";
             }
             
             // Add some clearings
-            map.Grid[2, 3].TerrainType = TerrainType.Plains;
-            map.Grid[2, 3].Name = "Forest Clearing";
-            map.Grid[2, 3].Description = "A small clearing in the forest. Wildflowers grow here in abundance.";
+            map.Grid[2][3].TerrainType = TerrainType.Plains;
+            map.Grid[2][3].Name = "Forest Clearing";
+            map.Grid[2][3].Description = "A small clearing in the forest. Wildflowers grow here in abundance.";
             
-            map.Grid[6, 5].TerrainType = TerrainType.Plains;
-            map.Grid[6, 5].Name = "Ancient Circle";
-            map.Grid[6, 5].Description = "A clearing with a circle of standing stones. They seem very old.";
+            map.Grid[6][5].TerrainType = TerrainType.Plains;
+            map.Grid[6][5].Name = "Ancient Circle";
+            map.Grid[6][5].Description = "A clearing with a circle of standing stones. They seem very old.";
             
             // Add Points of Interest
             
@@ -308,9 +308,9 @@ namespace DnDAdventure.Infrastructure.Services
             };
             
             world.AddPointOfInterest(huntersCampPOI);
-            map.Grid[1, 4].Name = "Hunter's Camp";
-            map.Grid[1, 4].Description = "A small camp with a fire pit and a leather tent.";
-            map.Grid[1, 4].PointOfInterestId = huntersCampPOI.Id;
+            map.Grid[1][4].Name = "Hunter's Camp";
+            map.Grid[1][4].Description = "A small camp with a fire pit and a leather tent.";
+            map.Grid[1][4].PointOfInterestId = huntersCampPOI.Id;
             
             // Ancient standing stones
             var standingStonesPOI = new PointOfInterest
@@ -347,7 +347,7 @@ namespace DnDAdventure.Infrastructure.Services
             };
             
             world.AddPointOfInterest(standingStonesPOI);
-            map.Grid[6, 5].PointOfInterestId = standingStonesPOI.Id;
+            map.Grid[6][5].PointOfInterestId = standingStonesPOI.Id;
             
             // Add NPCs
             
@@ -363,9 +363,9 @@ namespace DnDAdventure.Infrastructure.Services
             };
             
             world.AddNPC(ranger);
-            map.Grid[4, 2].NPCId = ranger.Id;
-            map.Grid[4, 2].Name = "Ranger's Post";
-            map.Grid[4, 2].Description = "A small wooden platform built around a large tree. A perfect vantage point for watching the forest.";
+            map.Grid[4][2].NPCId = ranger.Id;
+            map.Grid[4][2].Name = "Ranger's Post";
+            map.Grid[4][2].Description = "A small wooden platform built around a large tree. A perfect vantage point for watching the forest.";
         }
         
         private void PopulateMountainsMap(WorldMap map)
