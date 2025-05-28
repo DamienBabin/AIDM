@@ -1,6 +1,17 @@
 // DnDAdventure.Core/Models/DndClassesAndRaces.cs
 namespace DnDAdventure.Core.Models
 {
+    public class SpellcastingInfo
+    {
+        public string SpellcastingAbility { get; set; } = string.Empty;
+        public int CantripsKnown { get; set; }
+        public int SpellsKnown { get; set; }
+        public int SpellSlots { get; set; }
+        public bool RitualCasting { get; set; }
+        public string SpellcastingFocus { get; set; } = string.Empty;
+        public bool Spellbook { get; set; } = false;
+    }
+
     public class DndClass
     {
         public string Name { get; set; } = string.Empty;
@@ -22,6 +33,10 @@ namespace DnDAdventure.Core.Models
         public string Description { get; set; } = string.Empty;
         public List<ClassFeature> Features { get; set; } = new();
         public string Source { get; set; } = "Player's Handbook";
+        public List<string> Pros { get; set; } = new();
+        public List<string> Cons { get; set; } = new();
+        public List<string> BestFor { get; set; } = new();
+        public string PlayStyle { get; set; } = string.Empty;
     }
 
     public class ClassFeature
@@ -50,6 +65,10 @@ namespace DnDAdventure.Core.Models
         public Dictionary<string, int> AbilityScoreIncrease { get; set; } = new();
         public List<RacialTrait> Traits { get; set; } = new();
         public string Source { get; set; } = "Player's Handbook";
+        public List<string> Pros { get; set; } = new();
+        public List<string> Cons { get; set; } = new();
+        public List<string> BestFor { get; set; } = new();
+        public string PlayStyle { get; set; } = string.Empty;
     }
 
     public class RacialTrait
@@ -62,132 +81,6 @@ namespace DnDAdventure.Core.Models
     {
         public List<DndClass> Classes { get; set; } = new()
         {
-            new DndClass
-            {
-                Name = "Barbarian",
-                Description = "A fierce warrior who can enter a battle rage",
-                HitDie = 12,
-                PrimaryAbilities = new List<string> { "Strength" },
-                SavingThrowProficiencies = new List<string> { "Strength", "Constitution" },
-                ArmorProficiencies = new List<string> { "Light Armor", "Medium Armor", "Shields" },
-                WeaponProficiencies = new List<string> { "Simple Weapons", "Martial Weapons" },
-                StartingEquipment = new List<string> { "Greataxe", "Two handaxes", "Explorer's pack", "Four javelins" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Rage", Description = "In battle, you fight with primal ferocity.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Unarmored Defense", Description = "While you are not wearing any armor, your AC equals 10 + your Dexterity modifier + your Constitution modifier.", LevelUnlocked = 1 }
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "Path of the Berserker", Description = "A path of untrammeled fury, slick with blood.", Features = new List<ClassFeature> { new ClassFeature { Name = "Frenzy", Description = "You can go into a frenzy when you rage.", LevelUnlocked = 3 } } },
-                    new Subclass { Name = "Path of the Totem Warrior", Description = "A spiritual journey with a spirit animal as guide.", Features = new List<ClassFeature> { new ClassFeature { Name = "Totem Spirit", Description = "Choose a totem spirit and gain its feature.", LevelUnlocked = 3 } } },
-                    new Subclass { Name = "Path of the Ancestral Guardian", Description = "Warriors of the past linger as mighty spirits.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Path of the Storm Herald", Description = "Transform rage into a mantle of primal magic.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Path of the Zealot", Description = "Channel rage into displays of divine power.", Source = "Xanathar's Guide to Everything" }
-                }
-            },
-            new DndClass
-            {
-                Name = "Bard",
-                Description = "An inspiring magician whose power echoes the music of creation",
-                HitDie = 8,
-                PrimaryAbilities = new List<string> { "Charisma" },
-                SavingThrowProficiencies = new List<string> { "Dexterity", "Charisma" },
-                ArmorProficiencies = new List<string> { "Light Armor" },
-                WeaponProficiencies = new List<string> { "Simple Weapons", "Hand Crossbows", "Longswords", "Rapiers", "Shortswords" },
-                StartingEquipment = new List<string> { "Rapier", "Diplomat's pack", "Lute", "Leather armor", "Dagger" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Bardic Inspiration", Description = "You can inspire others through stirring words or music.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Spellcasting", Description = "You have learned to untangle and reshape the fabric of reality.", LevelUnlocked = 1 }
-                },
-                Spellcasting = new SpellcastingInfo
-                {
-                    SpellcastingAbility = "Charisma",
-                    CantripsKnown = 2,
-                    SpellsKnown = 4,
-                    SpellSlots = 2,
-                    RitualCasting = true,
-                    SpellcastingFocus = "Musical instrument"
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "College of Lore", Description = "Know something about most things, collecting knowledge from diverse sources." },
-                    new Subclass { Name = "College of Valor", Description = "Daring skalds whose tales inspire a new generation of heroes." },
-                    new Subclass { Name = "College of Glamour", Description = "Masters of craft in the vibrant realm of the Feywild.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "College of Swords", Description = "Blades who entertain through daring feats of weapon prowess.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "College of Whispers", Description = "Use their reputation to gather secrets and spread rumors.", Source = "Xanathar's Guide to Everything" }
-                }
-            },
-            new DndClass
-            {
-                Name = "Cleric",
-                Description = "A priestly champion who wields divine magic in service of a higher power",
-                HitDie = 8,
-                PrimaryAbilities = new List<string> { "Wisdom" },
-                SavingThrowProficiencies = new List<string> { "Wisdom", "Charisma" },
-                ArmorProficiencies = new List<string> { "Light Armor", "Medium Armor", "Shields" },
-                WeaponProficiencies = new List<string> { "Simple Weapons" },
-                StartingEquipment = new List<string> { "Mace", "Scale mail", "Light crossbow and 20 bolts", "Priest's pack", "Shield", "Holy symbol" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Spellcasting", Description = "As a conduit for divine power, you can cast cleric spells.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Divine Domain", Description = "Choose one domain related to your deity.", LevelUnlocked = 1 }
-                },
-                Spellcasting = new SpellcastingInfo
-                {
-                    SpellcastingAbility = "Wisdom",
-                    CantripsKnown = 3,
-                    SpellsKnown = 0, // Clerics prepare spells
-                    SpellSlots = 2,
-                    RitualCasting = true,
-                    SpellcastingFocus = "Holy symbol"
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "Knowledge Domain", Description = "Gods of knowledge value learning and understanding above all." },
-                    new Subclass { Name = "Life Domain", Description = "Focuses on the vibrant positive energy that sustains all life." },
-                    new Subclass { Name = "Light Domain", Description = "Promote ideals of rebirth, renewal, truth, and vigilance." },
-                    new Subclass { Name = "Nature Domain", Description = "Gods of nature, from deep forests to particular springs and groves." },
-                    new Subclass { Name = "Tempest Domain", Description = "Gods who govern storms, sea, and sky." },
-                    new Subclass { Name = "Trickery Domain", Description = "Mischief-makers who challenge the accepted order." },
-                    new Subclass { Name = "War Domain", Description = "Gods of war who make heroes of ordinary people." },
-                    new Subclass { Name = "Forge Domain", Description = "Patrons of artisans who work with metal.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Grave Domain", Description = "Watch over the line between life and death.", Source = "Xanathar's Guide to Everything" }
-                }
-            },
-            new DndClass
-            {
-                Name = "Druid",
-                Description = "A priest of nature, wielding elemental forces and transforming into animals",
-                HitDie = 8,
-                PrimaryAbilities = new List<string> { "Wisdom" },
-                SavingThrowProficiencies = new List<string> { "Intelligence", "Wisdom" },
-                ArmorProficiencies = new List<string> { "Light Armor", "Medium Armor", "Shields (non-metal)" },
-                WeaponProficiencies = new List<string> { "Clubs", "Daggers", "Darts", "Javelins", "Maces", "Quarterstaffs", "Scimitars", "Sickles", "Slings", "Spears" },
-                StartingEquipment = new List<string> { "Leather armor", "Shield", "Scimitar", "Druidcraft", "Explorer's pack" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Druidcraft", Description = "You know the druidcraft cantrip.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Spellcasting", Description = "Drawing on the divine essence of nature itself.", LevelUnlocked = 1 }
-                },
-                Spellcasting = new SpellcastingInfo
-                {
-                    SpellcastingAbility = "Wisdom",
-                    CantripsKnown = 2,
-                    SpellsKnown = 0, // Druids prepare spells
-                    SpellSlots = 2,
-                    RitualCasting = true,
-                    SpellcastingFocus = "Druidcraft focus"
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "Circle of the Land", Description = "Mystics and sages who safeguard ancient knowledge through oral tradition." },
-                    new Subclass { Name = "Circle of the Moon", Description = "Fierce guardians of the wilds who gather under the full moon." },
-                    new Subclass { Name = "Circle of Dreams", Description = "Hail from regions with strong ties to the Feywild.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Circle of the Shepherd", Description = "Commune with spirits of nature, especially beasts and fey.", Source = "Xanathar's Guide to Everything" }
-                }
-            },
             new DndClass
             {
                 Name = "Fighter",
@@ -205,178 +98,115 @@ namespace DnDAdventure.Core.Models
                 },
                 Subclasses = new List<Subclass>
                 {
-                    new Subclass { Name = "Champion", Description = "Focuses on raw physical power honed to deadly perfection." },
-                    new Subclass { Name = "Battle Master", Description = "Employ martial techniques passed down through generations." },
-                    new Subclass { Name = "Eldritch Knight", Description = "Combines martial mastery with careful study of magic." },
-                    new Subclass { Name = "Arcane Archer", Description = "Studies elven archery that weaves magic into attacks.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Cavalier", Description = "Masters of mounted combat and chivalric ideals.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Samurai", Description = "Fighters who draw on implacable fighting spirit.", Source = "Xanathar's Guide to Everything" }
-                }
-            },
-            new DndClass
-            {
-                Name = "Monk",
-                Description = "A master of martial arts, harnessing inner power through discipline and practice",
-                HitDie = 8,
-                PrimaryAbilities = new List<string> { "Dexterity", "Wisdom" },
-                SavingThrowProficiencies = new List<string> { "Strength", "Dexterity" },
-                ArmorProficiencies = new List<string> { },
-                WeaponProficiencies = new List<string> { "Simple Weapons", "Shortswords" },
-                StartingEquipment = new List<string> { "Shortsword", "Dungeoneer's pack", "10 darts" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Unarmored Defense", Description = "Your AC equals 10 + Dex modifier + Wis modifier.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Martial Arts", Description = "Mastery of combat styles using unarmed strikes.", LevelUnlocked = 1 }
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "Way of the Open Hand", Description = "Masters of unarmed combat, manipulating ki to heal or harm." },
-                    new Subclass { Name = "Way of Shadow", Description = "Follow a tradition that values stealth and subterfuge." },
-                    new Subclass { Name = "Way of the Four Elements", Description = "Harness the elements through their ki." },
-                    new Subclass { Name = "Way of the Drunken Master", Description = "Teaches students to move with jerky, unpredictable motions.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Way of the Kensei", Description = "Train relentlessly with weapons, to the point of becoming one with them.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Way of the Sun Soul", Description = "Learn to channel their life energy into searing bolts of light.", Source = "Xanathar's Guide to Everything" }
-                }
-            },
-            new DndClass
-            {
-                Name = "Paladin",
-                Description = "A holy warrior bound to a sacred oath, wielding divine magic and martial prowess",
-                HitDie = 10,
-                PrimaryAbilities = new List<string> { "Strength", "Charisma" },
-                SavingThrowProficiencies = new List<string> { "Wisdom", "Charisma" },
-                ArmorProficiencies = new List<string> { "All Armor", "Shields" },
-                WeaponProficiencies = new List<string> { "Simple Weapons", "Martial Weapons" },
-                StartingEquipment = new List<string> { "Chain mail", "Shield", "Martial weapon", "5 javelins", "Priest's pack", "Holy symbol" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Divine Sense", Description = "The presence of strong evil registers on your senses.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Lay on Hands", Description = "Your blessed touch can heal wounds.", LevelUnlocked = 1 }
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "Oath of Devotion", Description = "Binds a paladin to the loftiest ideals of justice and virtue." },
-                    new Subclass { Name = "Oath of the Ancients", Description = "As old as the race of elves and the rituals of the druids." },
-                    new Subclass { Name = "Oath of Vengeance", Description = "A solemn commitment to punish those who have committed grievous sins." },
-                    new Subclass { Name = "Oath of Conquest", Description = "Seeks to rule through strength and intimidation.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Oath of Redemption", Description = "Believes that anyone can be redeemed.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Oathbreaker", Description = "A paladin who breaks their sacred oaths to pursue dark ambitions." }
-                }
-            },
-            new DndClass
-            {
-                Name = "Ranger",
-                Description = "A warrior of the wilderness, skilled in tracking, survival, and combat",
-                HitDie = 10,
-                PrimaryAbilities = new List<string> { "Dexterity", "Wisdom" },
-                SavingThrowProficiencies = new List<string> { "Strength", "Dexterity" },
-                ArmorProficiencies = new List<string> { "Light Armor", "Medium Armor", "Shields" },
-                WeaponProficiencies = new List<string> { "Simple Weapons", "Martial Weapons" },
-                StartingEquipment = new List<string> { "Scale mail", "Shortsword", "Longbow and quiver of 20 arrows", "Dungeoneer's pack" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Favored Enemy", Description = "You have experience studying and hunting certain creatures.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Natural Explorer", Description = "You are adept at traveling and surviving in natural environments.", LevelUnlocked = 1 }
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "Hunter", Description = "Emulates the Hunter archetype, accepting the responsibility to protect civilization." },
-                    new Subclass { Name = "Beast Master", Description = "Embodies a friendship between civilized races and beasts of the world." },
-                    new Subclass { Name = "Gloom Stalker", Description = "At home in the darkest places, seeking out evil wherever it lurks.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Horizon Walker", Description = "Guards the world against threats from other planes.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Monster Slayer", Description = "Dedicated to hunting down creatures of the night.", Source = "Xanathar's Guide to Everything" }
-                }
-            },
-            new DndClass
-            {
-                Name = "Rogue",
-                Description = "A scoundrel who uses stealth and trickery to overcome obstacles and enemies",
-                HitDie = 8,
-                PrimaryAbilities = new List<string> { "Dexterity" },
-                SavingThrowProficiencies = new List<string> { "Dexterity", "Intelligence" },
-                ArmorProficiencies = new List<string> { "Light Armor" },
-                WeaponProficiencies = new List<string> { "Simple Weapons", "Hand Crossbows", "Longswords", "Rapiers", "Shortswords" },
-                StartingEquipment = new List<string> { "Rapier", "Shortbow and quiver of 20 arrows", "Burglar's pack", "Leather armor", "Two daggers", "Thieves' tools" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Sneak Attack", Description = "You know how to strike subtly and exploit a foe's distraction.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Thieves' Cant", Description = "A secret mix of dialect, jargon, and code.", LevelUnlocked = 1 }
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "Thief", Description = "Hones skills in larceny and develops talents useful for delving into ruins." },
-                    new Subclass { Name = "Assassin", Description = "Masters of dealing sudden death, striking from shadows." },
-                    new Subclass { Name = "Arcane Trickster", Description = "Enhances larcenous abilities with magic, learning tricks of enchantment and illusion." },
-                    new Subclass { Name = "Inquisitive", Description = "Masters of rooting out secrets and unraveling mysteries.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Mastermind", Description = "Focus on people and influence rather than locks and traps.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Scout", Description = "Skirmishers, spies, bounty hunters, and assassins.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Swashbuckler", Description = "Focuses on the art of the blade and speed in combat.", Source = "Xanathar's Guide to Everything" }
-                }
-            },
-            new DndClass
-            {
-                Name = "Sorcerer",
-                Description = "A spellcaster who draws on inherent magic from a gift or bloodline",
-                HitDie = 6,
-                PrimaryAbilities = new List<string> { "Charisma" },
-                SavingThrowProficiencies = new List<string> { "Constitution", "Charisma" },
-                ArmorProficiencies = new List<string> { },
-                WeaponProficiencies = new List<string> { "Daggers", "Darts", "Slings", "Quarterstaffs", "Light crossbows" },
-                StartingEquipment = new List<string> { "Light crossbow and 20 bolts", "Arcane focus", "Dungeoneer's pack", "Two daggers" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Spellcasting", Description = "An event in your past infused you with arcane magic.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Sorcerous Origin", Description = "Choose an origin that describes the source of your magical power.", LevelUnlocked = 1 }
-                },
-                Spellcasting = new SpellcastingInfo
-                {
-                    SpellcastingAbility = "Charisma",
-                    CantripsKnown = 4,
-                    SpellsKnown = 2,
-                    SpellSlots = 2,
-                    RitualCasting = false,
-                    SpellcastingFocus = "Arcane focus"
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "Draconic Bloodline", Description = "Your innate magic comes from draconic magic in your blood." },
-                    new Subclass { Name = "Wild Magic", Description = "Your spellcasting can unleash surges of untamed magic." },
-                    new Subclass { Name = "Divine Soul", Description = "Your magic springs from a divine source within yourself.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Shadow Magic", Description = "Your innate magic comes from the Shadowfell itself.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "Storm Sorcery", Description = "Your innate magic comes from the power of elemental air.", Source = "Xanathar's Guide to Everything" }
-                }
-            },
-            new DndClass
-            {
-                Name = "Warlock",
-                Description = "A wielder of magic derived from a bargain with an extraplanar entity",
-                HitDie = 8,
-                PrimaryAbilities = new List<string> { "Charisma" },
-                SavingThrowProficiencies = new List<string> { "Wisdom", "Charisma" },
-                ArmorProficiencies = new List<string> { "Light Armor" },
-                WeaponProficiencies = new List<string> { "Simple Weapons" },
-                StartingEquipment = new List<string> { "Light crossbow and 20 bolts", "Arcane focus", "Scholar's pack", "Leather armor", "Two daggers", "Simple weapon" },
-                Features = new List<ClassFeature>
-                {
-                    new ClassFeature { Name = "Otherworldly Patron", Description = "You have struck a pact with an otherworldly being.", LevelUnlocked = 1 },
-                    new ClassFeature { Name = "Pact Magic", Description = "Your patron has given you facility with spells.", LevelUnlocked = 1 }
-                },
-                Spellcasting = new SpellcastingInfo
-                {
-                    SpellcastingAbility = "Charisma",
-                    CantripsKnown = 2,
-                    SpellsKnown = 2,
-                    SpellSlots = 1,
-                    RitualCasting = false,
-                    SpellcastingFocus = "Arcane focus"
-                },
-                Subclasses = new List<Subclass>
-                {
-                    new Subclass { Name = "The Archfey", Description = "Your patron is a lord or lady of the fey." },
-                    new Subclass { Name = "The Fiend", Description = "You have made a pact with a fiend from the lower planes." },
-                    new Subclass { Name = "The Great Old One", Description = "Your patron is a mysterious entity whose nature is alien to reality." },
-                    new Subclass { Name = "The Celestial", Description = "Your patron is a powerful being of the Upper Planes.", Source = "Xanathar's Guide to Everything" },
-                    new Subclass { Name = "The Hexblade", Description = "Your patron exists in the Shadowfell as a sentient magic weapon.", Source = "Xanathar's Guide to Everything" }
+                    new Subclass 
+                    { 
+                        Name = "Champion", 
+                        Description = "Focuses on raw physical power honed to deadly perfection.",
+                        Features = new List<ClassFeature> 
+                        { 
+                            new ClassFeature { Name = "Improved Critical", Description = "Your weapon attacks score a critical hit on a roll of 19 or 20.", LevelUnlocked = 3 },
+                            new ClassFeature { Name = "Remarkable Athlete", Description = "Add half your proficiency bonus to Strength, Dexterity, and Constitution checks.", LevelUnlocked = 7 }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Simple and effective - great for new players",
+                            "Expanded critical hit range increases damage output",
+                            "Self-healing with Second Wind",
+                            "Excellent survivability with high AC and HP",
+                            "Versatile - works with any fighting style"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Limited tactical options compared to other subclasses",
+                            "No magical abilities or utility spells",
+                            "Can become repetitive in combat",
+                            "Fewer out-of-combat abilities"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "New players learning the game",
+                            "Players who prefer straightforward combat",
+                            "Tank builds focused on survivability",
+                            "Damage dealers who want consistent performance"
+                        },
+                        PlayStyle = "Straightforward melee combatant focused on dealing consistent damage and surviving on the front lines"
+                    },
+                    new Subclass 
+                    { 
+                        Name = "Battle Master", 
+                        Description = "Employ martial techniques passed down through generations.",
+                        Features = new List<ClassFeature> 
+                        { 
+                            new ClassFeature { Name = "Combat Superiority", Description = "Learn maneuvers that are fueled by special dice called superiority dice.", LevelUnlocked = 3 },
+                            new ClassFeature { Name = "Student of War", Description = "Gain proficiency with one type of artisan's tools.", LevelUnlocked = 3 }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Highly tactical with many combat maneuvers",
+                            "Versatile - can adapt to different situations",
+                            "Great battlefield control options",
+                            "Superiority dice add strategic resource management",
+                            "Excellent for experienced players who like options"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "More complex than Champion - requires planning",
+                            "Limited uses of maneuvers per short rest",
+                            "Can be overwhelming for new players",
+                            "Requires good knowledge of positioning and tactics"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Tactical players who enjoy complex combat",
+                            "Leaders who want to support allies",
+                            "Players who like resource management",
+                            "Characters focused on battlefield control"
+                        },
+                        PlayStyle = "Tactical combatant who uses special maneuvers to control the battlefield and support allies"
+                    },
+                    new Subclass 
+                    { 
+                        Name = "Eldritch Knight", 
+                        Description = "Combines martial mastery with careful study of magic.",
+                        Features = new List<ClassFeature> 
+                        { 
+                            new ClassFeature { Name = "Spellcasting", Description = "You learn to cast spells, focusing on abjuration and evocation.", LevelUnlocked = 3 },
+                            new ClassFeature { Name = "Weapon Bond", Description = "You can bond with up to two weapons, allowing you to summon them.", LevelUnlocked = 3 }
+                        },
+                        Spellcasting = new SpellcastingInfo
+                        {
+                            SpellcastingAbility = "Intelligence",
+                            CantripsKnown = 2,
+                            SpellsKnown = 3,
+                            SpellSlots = 2,
+                            RitualCasting = false,
+                            SpellcastingFocus = "Weapon or component pouch"
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Combines martial prowess with magic",
+                            "Shield spell provides excellent defense",
+                            "Cantrips offer ranged attack options",
+                            "War Magic allows weapon attacks with cantrips",
+                            "Unique blend of fighter and wizard abilities"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Limited spell selection (mostly abjuration/evocation)",
+                            "Slower spell progression than full casters",
+                            "Requires investment in Intelligence",
+                            "More complex character management",
+                            "May feel like a weaker version of both fighter and wizard"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Players who want magic without full spellcaster complexity",
+                            "Characters who need both melee and ranged options",
+                            "Players interested in gish (warrior-mage) builds",
+                            "Those who enjoy defensive magic like Shield and Absorb Elements"
+                        },
+                        PlayStyle = "Warrior-mage who enhances martial combat with protective and offensive spells"
+                    }
                 }
             },
             new DndClass
@@ -406,48 +236,114 @@ namespace DnDAdventure.Core.Models
                 },
                 Subclasses = new List<Subclass>
                 {
-                    new Subclass { Name = "School of Abjuration", Description = "Emphasizes magic that blocks, banishes, or protects." },
-                    new Subclass { Name = "School of Conjuration", Description = "Focuses on spells that produce objects and creatures out of nothing." },
-                    new Subclass { Name = "School of Divination", Description = "Seeks to unveil the mysteries of the world through magic." },
-                    new Subclass { Name = "School of Enchantment", Description = "Affects the minds of others, influencing or controlling their behavior." },
-                    new Subclass { Name = "School of Evocation", Description = "Focuses on magic that creates powerful elemental effects." },
-                    new Subclass { Name = "School of Illusion", Description = "Focuses on spells that dazzle the senses and trick the mind." },
-                    new Subclass { Name = "School of Necromancy", Description = "Explores the cosmic forces of life, death, and undeath." },
-                    new Subclass { Name = "School of Transmutation", Description = "Modifies energy and matter through magic." },
-                    new Subclass { Name = "War Magic", Description = "Combines evocation and abjuration to dominate the battlefield.", Source = "Xanathar's Guide to Everything" }
+                    new Subclass 
+                    { 
+                        Name = "School of Evocation", 
+                        Description = "Focuses on magic that creates powerful elemental effects.",
+                        Features = new List<ClassFeature> 
+                        { 
+                            new ClassFeature { Name = "Sculpt Spells", Description = "You can protect allies from your area-of-effect spells.", LevelUnlocked = 2 },
+                            new ClassFeature { Name = "Potent Cantrip", Description = "Your damaging cantrips affect even those who avoid the brunt of the effect.", LevelUnlocked = 6 }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Excellent damage output with evocation spells",
+                            "Sculpt Spells prevents friendly fire",
+                            "Potent Cantrip ensures cantrips always deal some damage",
+                            "Empowered Evocation adds Intelligence to damage",
+                            "Great for blaster builds focused on damage"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Limited utility compared to other schools",
+                            "Focused primarily on damage dealing",
+                            "May struggle in social encounters",
+                            "Fewer defensive options than abjuration",
+                            "Can be one-dimensional in playstyle"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Players who want to be the party's primary damage dealer",
+                            "Those who enjoy blasting enemies with fireballs",
+                            "Characters focused on battlefield control through damage",
+                            "Players who prefer straightforward spellcasting"
+                        },
+                        PlayStyle = "Destructive spellcaster focused on dealing maximum damage while protecting allies from collateral damage"
+                    },
+                    new Subclass 
+                    { 
+                        Name = "School of Abjuration", 
+                        Description = "Emphasizes magic that blocks, banishes, or protects.",
+                        Features = new List<ClassFeature> 
+                        { 
+                            new ClassFeature { Name = "Arcane Ward", Description = "You can weave magic around yourself for protection.", LevelUnlocked = 2 },
+                            new ClassFeature { Name = "Projected Ward", Description = "You can use your Arcane Ward to protect others.", LevelUnlocked = 6 }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Excellent survivability with Arcane Ward",
+                            "Can protect allies with Projected Ward",
+                            "Resistance to spell damage at higher levels",
+                            "Great utility with counterspell and dispel magic",
+                            "Perfect for defensive-minded players"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Lower damage output than evocation",
+                            "More reactive than proactive playstyle",
+                            "Requires good game knowledge to use effectively",
+                            "May feel less exciting than damage-focused builds",
+                            "Ward can be depleted quickly in tough fights"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Players who want to be the party's protector",
+                            "Those who enjoy defensive and utility magic",
+                            "Characters focused on battlefield control",
+                            "Players who like countering enemy spellcasters"
+                        },
+                        PlayStyle = "Protective spellcaster who shields allies and counters enemy magic while maintaining battlefield control"
+                    },
+                    new Subclass 
+                    { 
+                        Name = "School of Divination", 
+                        Description = "Seeks to unveil the mysteries of the world through magic.",
+                        Features = new List<ClassFeature> 
+                        { 
+                            new ClassFeature { Name = "Portent", Description = "You can replace any attack roll, saving throw, or ability check with a foretold roll.", LevelUnlocked = 2 },
+                            new ClassFeature { Name = "Expert Divination", Description = "Casting divination spells comes so easily to you that it expends only a fraction of your spellcasting efforts.", LevelUnlocked = 6 }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Portent provides incredible tactical control",
+                            "Can guarantee critical successes or failures",
+                            "Excellent utility with divination spells",
+                            "Great for players who like to plan ahead",
+                            "Third Eye provides useful reconnaissance abilities"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Lower direct damage than other schools",
+                            "Portent dice are limited per day",
+                            "Requires strategic thinking to use effectively",
+                            "May feel less impactful in pure combat",
+                            "Divination spells can be situational"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Strategic players who enjoy controlling outcomes",
+                            "Those who like support and utility roles",
+                            "Characters focused on information gathering",
+                            "Players who enjoy manipulating probability"
+                        },
+                        PlayStyle = "Oracle-like spellcaster who manipulates fate and gathers information to support the party"
+                    }
                 }
             }
         };
 
         public List<DndRace> Races { get; set; } = new()
         {
-            new DndRace
-            {
-                Name = "Human",
-                Description = "Humans are the most adaptable and ambitious people among the common races.",
-                AbilityScoreIncrease = new Dictionary<string, int> { { "Strength", 1 }, { "Dexterity", 1 }, { "Constitution", 1 }, { "Intelligence", 1 }, { "Wisdom", 1 }, { "Charisma", 1 } },
-                Speed = 30,
-                Languages = new List<string> { "Common", "One additional language of your choice" },
-                Traits = new List<RacialTrait>
-                {
-                    new RacialTrait { Name = "Extra Skill", Description = "You gain proficiency in one skill of your choice." },
-                    new RacialTrait { Name = "Extra Feat", Description = "You gain one feat of your choice." }
-                },
-                Subraces = new List<Subrace>
-                {
-                    new Subrace
-                    {
-                        Name = "Variant Human",
-                        Description = "Some humans are born with exceptional abilities.",
-                        AbilityScoreIncrease = new Dictionary<string, int> { { "Any Two Different", 1 } },
-                        Traits = new List<RacialTrait>
-                        {
-                            new RacialTrait { Name = "Skills", Description = "You gain proficiency in one skill of your choice." },
-                            new RacialTrait { Name = "Feat", Description = "You gain one feat of your choice." }
-                        }
-                    }
-                }
-            },
             new DndRace
             {
                 Name = "Elf",
@@ -474,7 +370,30 @@ namespace DnDAdventure.Core.Models
                             new RacialTrait { Name = "Elf Weapon Training", Description = "You have proficiency with longswords, shortbows, longbows, and shortswords." },
                             new RacialTrait { Name = "Cantrip", Description = "You know one cantrip of your choice from the wizard spell list." },
                             new RacialTrait { Name = "Extra Language", Description = "You can speak, read, and write one extra language of your choice." }
-                        }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Free wizard cantrip provides magical versatility",
+                            "Intelligence bonus great for wizards and artificers",
+                            "Weapon training gives martial options to casters",
+                            "Extra language aids in social encounters",
+                            "Excellent for gish (warrior-mage) builds"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Intelligence bonus less useful for non-caster classes",
+                            "Weapon training may be redundant for some classes",
+                            "Cantrip uses Intelligence, may not scale well",
+                            "Less specialized than other elf subraces"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Wizards and other Intelligence-based casters",
+                            "Eldritch Knights and other gish builds",
+                            "Characters who want magical and martial options",
+                            "Players who enjoy versatile characters"
+                        },
+                        PlayStyle = "Versatile character combining martial prowess with arcane magic, excellent for hybrid builds"
                     },
                     new Subrace
                     {
@@ -486,7 +405,30 @@ namespace DnDAdventure.Core.Models
                             new RacialTrait { Name = "Elf Weapon Training", Description = "You have proficiency with longswords, shortbows, longbows, and shortswords." },
                             new RacialTrait { Name = "Fleet of Foot", Description = "Your base walking speed increases to 35 feet." },
                             new RacialTrait { Name = "Mask of the Wild", Description = "You can attempt to hide even when only lightly obscured by foliage." }
-                        }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Wisdom bonus excellent for druids, clerics, and rangers",
+                            "Increased speed provides tactical mobility",
+                            "Mask of the Wild enables stealth in natural environments",
+                            "Weapon training includes longbow proficiency",
+                            "Perfect for nature-based characters"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Wisdom bonus less useful for non-Wisdom classes",
+                            "Mask of the Wild only works in natural settings",
+                            "Weapon training may overlap with class proficiencies",
+                            "Less versatile than High Elf's cantrip"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Rangers, druids, and clerics",
+                            "Characters focused on archery and stealth",
+                            "Nature-themed campaigns and characters",
+                            "Players who enjoy mobility and stealth"
+                        },
+                        PlayStyle = "Swift, stealthy character at home in natural environments, excellent archer and scout"
                     },
                     new Subrace
                     {
@@ -499,7 +441,31 @@ namespace DnDAdventure.Core.Models
                             new RacialTrait { Name = "Sunlight Sensitivity", Description = "You have disadvantage on attack rolls and Perception checks in direct sunlight." },
                             new RacialTrait { Name = "Drow Magic", Description = "You know the dancing lights cantrip. At 3rd level, you can cast faerie fire once per day." },
                             new RacialTrait { Name = "Drow Weapon Training", Description = "You have proficiency with rapiers, shortswords, and hand crossbows." }
-                        }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Charisma bonus great for bards, sorcerers, warlocks, and paladins",
+                            "Superior darkvision excellent for underground adventures",
+                            "Drow magic provides useful utility spells",
+                            "Weapon training includes finesse weapons",
+                            "Unique and interesting roleplay opportunities"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Sunlight sensitivity is a significant drawback",
+                            "May face social prejudice in many campaigns",
+                            "Charisma bonus less useful for non-Charisma classes",
+                            "Drow magic spells are limited use",
+                            "Sunlight sensitivity affects outdoor adventures"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Charisma-based casters (bards, sorcerers, warlocks)",
+                            "Paladins who can handle the moral complexity",
+                            "Underground or nighttime campaigns",
+                            "Players who enjoy complex roleplay challenges"
+                        },
+                        PlayStyle = "Charismatic character with innate magic, best suited for underground adventures and complex social dynamics"
                     }
                 }
             },
@@ -527,7 +493,30 @@ namespace DnDAdventure.Core.Models
                         Traits = new List<RacialTrait>
                         {
                             new RacialTrait { Name = "Dwarven Toughness", Description = "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level." }
-                        }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Exceptional survivability with Constitution bonus and extra HP",
+                            "Wisdom bonus great for clerics, druids, and rangers",
+                            "Dwarven Toughness provides permanent HP boost",
+                            "Poison resistance useful against many enemies",
+                            "Excellent for tanky support characters"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Reduced speed can limit tactical positioning",
+                            "Wisdom bonus less useful for non-Wisdom classes",
+                            "No additional combat abilities beyond base dwarf traits",
+                            "May struggle to keep up with faster party members"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Clerics and other Wisdom-based casters",
+                            "Tank builds focused on survivability",
+                            "Support characters who need to stay alive",
+                            "Players who prefer defensive playstyles"
+                        },
+                        PlayStyle = "Incredibly durable support character with excellent survivability and healing capabilities"
                     },
                     new Subrace
                     {
@@ -537,218 +526,73 @@ namespace DnDAdventure.Core.Models
                         Traits = new List<RacialTrait>
                         {
                             new RacialTrait { Name = "Armor Proficiency", Description = "You have proficiency with light and medium armor." }
-                        }
+                        },
+                        Pros = new List<string> 
+                        { 
+                            "Strength bonus excellent for fighters, paladins, and barbarians",
+                            "Armor proficiency allows casters to wear better protection",
+                            "Constitution bonus provides excellent survivability",
+                            "Great for front-line combatants",
+                            "Unique combination of mental and physical stats"
+                        },
+                        Cons = new List<string> 
+                        { 
+                            "Reduced speed limits mobility in combat",
+                            "Strength bonus less useful for Dexterity-based builds",
+                            "Armor proficiency may be redundant for some classes",
+                            "No additional HP like Hill Dwarf"
+                        },
+                        BestFor = new List<string> 
+                        { 
+                            "Strength-based fighters and paladins",
+                            "Clerics who want better armor options",
+                            "Barbarians (though speed reduction hurts)",
+                            "Any character wanting durability and martial prowess"
+                        },
+                        PlayStyle = "Sturdy warrior combining physical might with natural toughness, excellent front-line combatant"
                     }
                 }
             },
             new DndRace
             {
-                Name = "Halfling",
-                Description = "The diminutive halflings survive in a world full of larger creatures by avoiding notice.",
-                AbilityScoreIncrease = new Dictionary<string, int> { { "Dexterity", 2 } },
-                Speed = 25,
-                Languages = new List<string> { "Common", "Halfling" },
+                Name = "Human",
+                Description = "Humans are the most adaptable and ambitious people among the common races.",
+                AbilityScoreIncrease = new Dictionary<string, int> { { "Strength", 1 }, { "Dexterity", 1 }, { "Constitution", 1 }, { "Intelligence", 1 }, { "Wisdom", 1 }, { "Charisma", 1 } },
+                Speed = 30,
+                Languages = new List<string> { "Common", "One additional language of your choice" },
                 Traits = new List<RacialTrait>
                 {
-                    new RacialTrait { Name = "Lucky", Description = "When you roll a 1 on an attack roll, ability check, or saving throw, you can reroll the die." },
-                    new RacialTrait { Name = "Brave", Description = "You have advantage on saving throws against being frightened." },
-                    new RacialTrait { Name = "Halfling Nimbleness", Description = "You can move through the space of any creature that is larger than you." }
+                    new RacialTrait { Name = "Extra Skill", Description = "You gain proficiency in one skill of your choice." },
+                    new RacialTrait { Name = "Extra Feat", Description = "You gain one feat of your choice." }
                 },
                 Subraces = new List<Subrace>
                 {
                     new Subrace
                     {
-                        Name = "Lightfoot Halfling",
-                        Description = "Lightfoot halflings can easily hide from notice, even using other people as cover.",
-                        AbilityScoreIncrease = new Dictionary<string, int> { { "Charisma", 1 } },
+                        Name = "Variant Human",
+                        Description = "Some humans are born with exceptional abilities.",
+                        AbilityScoreIncrease = new Dictionary<string, int> { { "Any Two Different", 1 } },
                         Traits = new List<RacialTrait>
                         {
-                            new RacialTrait { Name = "Naturally Stealthy", Description = "You can attempt to hide even when obscured only by a creature that is at least one size larger than you." }
-                        }
-                    },
-                    new Subrace
-                    {
-                        Name = "Stout Halfling",
-                        Description = "Stout halflings have dwarven blood and are more durable than other halflings.",
-                        AbilityScoreIncrease = new Dictionary<string, int> { { "Constitution", 1 } },
-                        Traits = new List<RacialTrait>
-                        {
-                            new RacialTrait { Name = "Stout Resilience", Description = "You have advantage on saving throws against poison, and resistance to poison damage." }
-                        }
-                    }
-                }
-            },
-            new DndRace
-            {
-                Name = "Dragonborn",
-                Description = "Born of dragons, the dragonborn walk proudly through a world that greets them with fearful incomprehension.",
-                AbilityScoreIncrease = new Dictionary<string, int> { { "Strength", 2 }, { "Charisma", 1 } },
-                Speed = 30,
-                Languages = new List<string> { "Common", "Draconic" },
-                Traits = new List<RacialTrait>
-                {
-                    new RacialTrait { Name = "Draconic Ancestry", Description = "You have draconic ancestry. Choose one type of dragon from the Draconic Ancestry table." },
-                    new RacialTrait { Name = "Breath Weapon", Description = "You can use your action to exhale destructive energy." },
-                    new RacialTrait { Name = "Damage Resistance", Description = "You have resistance to the damage type associated with your draconic ancestry." }
-                }
-            },
-            new DndRace
-            {
-                Name = "Gnome",
-                Description = "A gnome's energy and enthusiasm for living shines through every inch of his or her tiny body.",
-                AbilityScoreIncrease = new Dictionary<string, int> { { "Intelligence", 2 } },
-                Speed = 25,
-                Languages = new List<string> { "Common", "Gnomish" },
-                Traits = new List<RacialTrait>
-                {
-                    new RacialTrait { Name = "Darkvision", Description = "You can see in dim light within 60 feet as if it were bright light." },
-                    new RacialTrait { Name = "Gnome Cunning", Description = "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic." }
-                },
-                Subraces = new List<Subrace>
-                {
-                    new Subrace
-                    {
-                        Name = "Forest Gnome",
-                        Description = "Forest gnomes have a natural knack for illusion and inherent quickness and stealth.",
-                        AbilityScoreIncrease = new Dictionary<string, int> { { "Dexterity", 1 } },
-                        Traits = new List<RacialTrait>
-                        {
-                            new RacialTrait { Name = "Natural Illusionist", Description = "You know the minor illusion cantrip." },
-                            new RacialTrait { Name = "Speak with Small Beasts", Description = "You can communicate simple ideas with Small or smaller beasts." }
-                        }
-                    },
-                    new Subrace
-                    {
-                        Name = "Rock Gnome",
-                        Description = "Rock gnomes are the most common gnomes, known for their technological bent.",
-                        AbilityScoreIncrease = new Dictionary<string, int> { { "Constitution", 1 } },
-                        Traits = new List<RacialTrait>
-                        {
-                            new RacialTrait { Name = "Artificer's Lore", Description = "Add twice your proficiency bonus to History checks related to magic items, alchemical objects, or technological devices." },
-                            new RacialTrait { Name = "Tinker", Description = "You have proficiency with artisan's tools (tinker's tools)." }
-                        }
-                    }
-                }
-            },
-            new DndRace
-            {
-                Name = "Half-Elf",
-                Description = "Half-elves combine what some say are the best qualities of their elf and human parents.",
-                AbilityScoreIncrease = new Dictionary<string, int> { { "Charisma", 2 }, { "Any Two Different", 1 } },
-                Speed = 30,
-                Languages = new List<string> { "Common", "Elvish", "One additional language of your choice" },
-                Traits = new List<RacialTrait>
-                {
-                    new RacialTrait { Name = "Darkvision", Description = "You can see in dim light within 60 feet as if it were bright light." },
-                    new RacialTrait { Name = "Fey Ancestry", Description = "You have advantage on saving throws against being charmed." },
-                    new RacialTrait { Name = "Two Skills", Description = "You gain proficiency in two skills of your choice." }
-                }
-            },
-            new DndRace
-            {
-                Name = "Half-Orc",
-                Description = "Half-orcs most often live among orcs. Of the other races, humans are most likely to accept half-orcs.",
-                AbilityScoreIncrease = new Dictionary<string, int> { { "Strength", 2 }, { "Constitution", 1 } },
-                Speed = 30,
-                Languages = new List<string> { "Common", "Orc" },
-                Traits = new List<RacialTrait>
-                {
-                    new RacialTrait { Name = "Darkvision", Description = "You can see in dim light within 60 feet as if it were bright light." },
-                    new RacialTrait { Name = "Relentless Endurance", Description = "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead." },
-                    new RacialTrait { Name = "Savage Attacks", Description = "When you score a critical hit with a melee weapon attack, you can roll one additional weapon damage die." }
-                }
-            },
-            new DndRace
-            {
-                Name = "Tiefling",
-                Description = "Tieflings are derived from human bloodlines, and in the broadest possible sense, they still look human.",
-                AbilityScoreIncrease = new Dictionary<string, int> { { "Intelligence", 1 }, { "Charisma", 2 } },
-                Speed = 30,
-                Languages = new List<string> { "Common", "Infernal" },
-                Traits = new List<RacialTrait>
-                {
-                    new RacialTrait { Name = "Darkvision", Description = "You can see in dim light within 60 feet as if it were bright light." },
-                    new RacialTrait { Name = "Hellish Resistance", Description = "You have resistance to fire damage." },
-                    new RacialTrait { Name = "Infernal Legacy", Description = "You know the thaumaturgy cantrip. At 3rd level, you can cast hellish rebuke once per day." }
-                }
-            },
-            new DndRace
-            {
-                Name = "Aarakocra",
-                Description = "Aarakocra are bird-like humanoids who soar above the world, viewing it from the skies.",
-                AbilityScoreIncrease = new Dictionary<string, int> { { "Dexterity", 2 }, { "Wisdom", 1 } },
-                Speed = 25,
-                Languages = new List<string> { "Common", "Aarakocra", "Auran" },
-                Traits = new List<RacialTrait>
-                {
-                    new RacialTrait { Name = "Flight", Description = "You have a flying speed of 50 feet. You can't use this flying speed if you're wearing medium or heavy armor." },
-                    new RacialTrait { Name = "Talons", Description = "Your talons are natural weapons, which you can use to make unarmed strikes." }
-                },
-                Source = "Elemental Evil Player's Companion"
-            },
-            new DndRace
-            {
-                Name = "Genasi",
-                Description = "Genasi are planetouched humans, infused with the power of the elemental planes.",
-                AbilityScoreIncrease = new Dictionary<string, int> { { "Constitution", 2 } },
-                Speed = 30,
-                Languages = new List<string> { "Common", "Primordial" },
-                Traits = new List<RacialTrait>(),
-                Subraces = new List<Subrace>
-                {
-                    new Subrace
-                    {
-                        Name = "Air Genasi",
-                        Description = "Air genasi are proud of their heritage, sometimes to the point of haughtiness.",
-                        AbilityScoreIncrease = new Dictionary<string, int> { { "Dexterity", 1 } },
-                        Traits = new List<RacialTrait>
-                        {
-                            new RacialTrait { Name = "Unending Breath", Description = "You can hold your breath indefinitely while you're not incapacitated." },
-                            new RacialTrait { Name = "Mingle with the Wind", Description = "You can cast the levitate spell once with this trait, requiring no material components." }
+                            new RacialTrait { Name = "Skills", Description = "You gain proficiency in one skill of your choice." },
+                            new RacialTrait { Name = "Feat", Description = "You gain one feat of your choice." }
                         },
-                        Source = "Elemental Evil Player's Companion"
-                    },
-                    new Subrace
-                    {
-                        Name = "Earth Genasi",
-                        Description = "Earth genasi are more withdrawn, and their connection to the earth keeps them confident and strong.",
-                        AbilityScoreIncrease = new Dictionary<string, int> { { "Strength", 1 } },
-                        Traits = new List<RacialTrait>
-                        {
-                            new RacialTrait { Name = "Earth Walk", Description = "You can move across difficult terrain made of earth or stone without expending extra movement." },
-                            new RacialTrait { Name = "Merge with Stone", Description = "You can cast the pass without trace spell once with this trait, requiring no material components." }
+                        Pros = new List<string> 
+                        { 
+                            "Free feat at 1st level provides significant customization",
+                            "Flexible ability score increases fit any build",
+                            "Extra skill proficiency adds versatility",
+                            "Can take powerful feats like Great Weapon Master early",
+                            "Excellent for optimized builds"
                         },
-                        Source = "Elemental Evil Player's Companion"
-                    },
-                    new Subrace
-                    {
-                        Name = "Fire Genasi",
-                        Description = "Fire genasi have obvious physical traits that mark them as different.",
-                        AbilityScoreIncrease = new Dictionary<string, int> { { "Intelligence", 1 } },
-                        Traits = new List<RacialTrait>
-                        {
-                            new RacialTrait { Name = "Darkvision", Description = "You can see in dim light within 60 feet as if it were bright light." },
-                            new RacialTrait { Name = "Fire Resistance", Description = "You have resistance to fire damage." },
-                            new RacialTrait { Name = "Reach to the Blaze", Description = "You know the produce flame cantrip." }
+                        Cons = new List<string> 
+                        { 
+                            "No special abilities like darkvision or resistances",
+                            "May feel 'boring' compared to exotic races",
+                            "Smaller total ability score bonuses than standard human",
+                            "Relies heavily on feat choice for uniqueness"
                         },
-                        Source = "Elemental Evil Player's Companion"
-                    },
-                    new Subrace
-                    {
-                        Name = "Water Genasi",
-                        Description = "Water genasi are perfectly suited to life underwater and carry the power of the waves inside themselves.",
-                        AbilityScoreIncrease = new Dictionary<string, int> { { "Wisdom", 1 } },
-                        Traits = new List<RacialTrait>
-                        {
-                            new RacialTrait { Name = "Acid Resistance", Description = "You have resistance to acid damage." },
-                            new RacialTrait { Name = "Amphibious", Description = "You can breathe air and water." },
-                            new RacialTrait { Name = "Swimming", Description = "You have a swimming speed of 30 feet." },
-                            new RacialTrait { Name = "Call to the Wave", Description = "You know the shape water cantrip." }
-                        },
-                        Source = "Elemental Evil Player's Companion"
-                    }
-                }
-            }
-        };
-    }
-}
+                        BestFor = new List<string> 
+                        { 
+                            "Optimized builds that benefit from early feats",
+                            "Any class that wants specific feat synergies",

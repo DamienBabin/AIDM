@@ -567,4 +567,111 @@
                                                 <span>Intelligence</span>
                                                 <span id="int-value">10</span>
                                             </li>
-                                            <li class="list-group-item d-flex justify-
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Wisdom</span>
+                                                <span id="wis-value">10</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Charisma</span>
+                                                <span id="cha-value">10</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Character Summary</h6>
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Name</span>
+                                                <span id="preview-name">-</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Race</span>
+                                                <span id="preview-race">-</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Class</span>
+                                                <span id="preview-class">-</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <span>Background</span>
+                                                <span id="preview-background">-</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Equipment Tab -->
+                            <div class="tab-pane fade" id="equipment-content" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Starting Equipment</h6>
+                                        <ul id="starting-equipment" class="list-group">
+                                            <li class="list-group-item text-muted">Select a class to see starting equipment</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Proficiencies</h6>
+                                        <div class="mb-3">
+                                            <strong>Armor:</strong>
+                                            <div id="armor-proficiencies" class="text-muted">Select a class to see armor proficiencies</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <strong>Weapons:</strong>
+                                            <div id="weapon-proficiencies" class="text-muted">Select a class to see weapon proficiencies</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <strong>Saving Throws:</strong>
+                                            <div id="saving-throw-proficiencies" class="text-muted">Select a class to see saving throw proficiencies</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Spells Tab -->
+                            <div class="tab-pane fade" id="spells-content" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Known Cantrips</h6>
+                                        <ul id="known-cantrips" class="list-group">
+                                            <li class="list-group-item text-muted">No cantrips selected</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Spellcasting Info</h6>
+                                        <div id="spellcasting-info" class="text-muted">
+                                            Select a spellcasting class to see spellcasting information
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <button type="button" class="btn btn-success btn-lg me-3" id="create-character">
+                🎭 Create Character
+            </button>
+            <button type="button" class="btn btn-secondary btn-lg" id="reset-form">
+                🔄 Reset Form
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Include JavaScript -->
+<script>
+    // Make API base URL available to JavaScript
+    window.apiBaseUrl = '@Model.ApiBaseUrl';
+</script>
+<script src="~/js/character-creation.js"></script>
+
+@section Scripts {
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+}

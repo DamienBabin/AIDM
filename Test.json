@@ -1,146 +1,418 @@
 {
-  "character": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Theron Silvermane",
-    "race": "Elf",
-    "class": "Mage",
-    "level": 1,
-    "healthPoints": 8,
-    "maxHealthPoints": 8,
-    "attributes": {
-      "Strength": 10,
-      "Dexterity": 12,
-      "Constitution": 10,
-      "Intelligence": 16,
-      "Wisdom": 14,
-      "Charisma": 12
-    },
-    "inventory": [
-      "Staff",
-      "Spellbook",
-      "Component Pouch",
-      "Scholar's Pack",
-      "3 Health Potions"
-    ]
-  },
-  "world": {
-    "id": "7b8e8000-c2a1-4c61-b556-447755550000",
-    "name": "Realm of the Crystal Spire",
-    "description": "A mystical land where a mysterious crystal spire dominates the skyline, its presence affecting magic throughout the realm.",
-    "createdAt": "2024-03-20T10:30:00Z",
-    "lastSavedAt": "2024-03-20T10:30:00Z",
-    "locations": {
-      "Northaven Village": "A peaceful trading village nestled in the shadow of the Crystal Spire",
-      "Mystic Forest": "An ancient woodland where magical creatures dwell",
-      "Crystal Spire Base": "The mysterious foundation of the towering crystal structure",
-      "Dwarven Mines": "Rich mineral deposits worked by skilled dwarven miners"
-    },
-    "quests": {
-      "crystal-resonance": "Investigate the unusual magical resonance emanating from the Crystal Spire",
-      "missing-merchant": "Find the missing merchant who disappeared on the road to Northaven",
-      "dwarven-artifact": "Recover an ancient dwarven artifact from the mines"
-    },
-    "maps": {
-      "7b8e8000-c2a1-4c61-b556-447755550001": {
-        "id": "7b8e8000-c2a1-4c61-b556-447755550001",
-        "name": "Northaven Village",
-        "description": "The main village of the region",
-        "grid": [
-          [
-            {
-              "name": "Village Square",
-              "description": "The central gathering place of Northaven",
-              "terrainType": "Urban",
-              "passable": true,
-              "hasPlayer": false,
-              "poiId": "7b8e8000-c2a1-4c61-b556-447755550002"
-            }
-          ]
-        ]
-      }
-    },
-    "pointsOfInterest": {
-      "7b8e8000-c2a1-4c61-b556-447755550002": {
-        "id": "7b8e8000-c2a1-4c61-b556-447755550002",
-        "name": "Village Well",
-        "description": "A stone well in the village square. The water here is clean and refreshing.",
-        "type": "Landmark",
-        "availableActions": [
-          {
-            "name": "Drink",
-            "description": "You drink from the well. The water is cool and refreshing.",
-            "effects": {
-              "RestoreHealth": "1"
-            }
-          }
-        ]
-      }
-    },
-    "npcs": {
-      "7b8e8000-c2a1-4c61-b556-447755550003": {
-        "id": "7b8e8000-c2a1-4c61-b556-447755550003",
-        "name": "Barley Goldfoam",
-        "race": "Human",
-        "occupation": "Tavern Keeper",
-        "description": "A portly man with a bushy mustache and a jolly demeanor.",
-        "currentLocation": "Northaven Village",
-        "dialogs": [
-          {
-            "id": 1,
-            "text": "Welcome to the Golden Barrel! What can I get you?",
-            "options": [
-              {
-                "text": "I'd like a drink",
-                "nextDialogId": 2
-              },
-              {
-                "text": "Tell me about the Crystal Spire",
-                "nextDialogId": 3
-              }
-            ]
-          }
-        ],
-        "inventory": [
-          {
-            "name": "Health Potion",
-            "description": "Restores 5 HP",
-            "value": 50,
-            "isTradeable": true
-          }
-        ],
-        "availableQuestIds": ["missing-merchant"]
-      }
-    },
-    "gameStates": {
-      "7b8e8000-c2a1-4c61-b556-447755550004": {
-        "id": "7b8e8000-c2a1-4c61-b556-447755550004",
-        "characterId": "550e8400-e29b-41d4-a716-446655440000",
-        "worldId": "7b8e8000-c2a1-4c61-b556-447755550000",
-        "currentLocation": "Northaven Village",
-        "completedQuests": [],
-        "activeQuests": ["crystal-resonance"],
-        "currentStoryNode": 1,
-        "flags": {
-          "metTavernKeeper": true,
-          "discoveredCrystalSpire": false
+  "classes": [
+    {
+      "name": "Fighter",
+      "description": "A master of martial combat, skilled with a variety of weapons and armor",
+      "hitDie": 10,
+      "primaryAbilities": ["Strength", "Dexterity"],
+      "savingThrowProficiencies": ["Strength", "Constitution"],
+      "armorProficiencies": ["All Armor", "Shields"],
+      "weaponProficiencies": ["Simple Weapons", "Martial Weapons"],
+      "startingEquipment": ["Chain mail", "Shield", "Martial weapon", "Light crossbow and 20 bolts", "Dungeoneer's pack"],
+      "features": [
+        {
+          "name": "Fighting Style",
+          "description": "You adopt a particular style of fighting as your specialty.",
+          "levelUnlocked": 1
+        },
+        {
+          "name": "Second Wind",
+          "description": "You have a limited well of stamina to protect yourself.",
+          "levelUnlocked": 1
         }
-      }
+      ],
+      "subclasses": [
+        {
+          "name": "Champion",
+          "description": "Focuses on raw physical power honed to deadly perfection.",
+          "features": [
+            {
+              "name": "Improved Critical",
+              "description": "Your weapon attacks score a critical hit on a roll of 19 or 20.",
+              "levelUnlocked": 3
+            },
+            {
+              "name": "Remarkable Athlete",
+              "description": "Add half your proficiency bonus to Strength, Dexterity, and Constitution checks.",
+              "levelUnlocked": 7
+            }
+          ],
+          "source": "Player's Handbook",
+          "pros": [
+            "Simple and effective - great for new players",
+            "Expanded critical hit range increases damage output",
+            "Self-healing with Second Wind",
+            "Excellent survivability with high AC and HP",
+            "Versatile - works with any fighting style"
+          ],
+          "cons": [
+            "Limited tactical options compared to other subclasses",
+            "No magical abilities or utility spells",
+            "Can become repetitive in combat",
+            "Fewer out-of-combat abilities"
+          ],
+          "bestFor": [
+            "New players learning the game",
+            "Players who prefer straightforward combat",
+            "Tank builds focused on survivability",
+            "Damage dealers who want consistent performance"
+          ],
+          "playStyle": "Straightforward melee combatant focused on dealing consistent damage and surviving on the front lines"
+        },
+        {
+          "name": "Battle Master",
+          "description": "Employ martial techniques passed down through generations.",
+          "features": [
+            {
+              "name": "Combat Superiority",
+              "description": "Learn maneuvers that are fueled by special dice called superiority dice.",
+              "levelUnlocked": 3
+            },
+            {
+              "name": "Student of War",
+              "description": "Gain proficiency with one type of artisan's tools.",
+              "levelUnlocked": 3
+            }
+          ],
+          "source": "Player's Handbook",
+          "pros": [
+            "Highly tactical with many combat maneuvers",
+            "Versatile - can adapt to different situations",
+            "Great battlefield control options",
+            "Superiority dice add strategic resource management",
+            "Excellent for experienced players who like options"
+          ],
+          "cons": [
+            "More complex than Champion - requires planning",
+            "Limited uses of maneuvers per short rest",
+            "Can be overwhelming for new players",
+            "Requires good knowledge of positioning and tactics"
+          ],
+          "bestFor": [
+            "Tactical players who enjoy complex combat",
+            "Leaders who want to support allies",
+            "Players who like resource management",
+            "Characters focused on battlefield control"
+          ],
+          "playStyle": "Tactical combatant who uses special maneuvers to control the battlefield and support allies"
+        }
+      ]
     },
-    "structures": {
-      "7b8e8000-c2a1-4c61-b556-447755550005": {
-        "id": "7b8e8000-c2a1-4c61-b556-447755550005",
-        "name": "The Golden Barrel Tavern",
-        "description": "A cozy tavern with a warm hearth and the smell of fresh bread",
-        "type": "Building"
-      }
-    },
-    "characterEquipment": {
-      "550e8400-e29b-41d4-a716-446655440000": {
-        "characterId": "550e8400-e29b-41d4-a716-446655440000",
-        "weaponSlot": "Staff",
-        "armorSlot": "Mage Robes",
-        "offhandSlot": null
-      }
+    {
+      "name": "Wizard",
+      "description": "A scholarly magic-user capable of manipulating the structures of reality",
+      "hitDie": 6,
+      "primaryAbilities": ["Intelligence"],
+      "savingThrowProficiencies": ["Intelligence", "Wisdom"],
+      "armorProficiencies": [],
+      "weaponProficiencies": ["Daggers", "Darts", "Slings", "Quarterstaffs", "Light crossbows"],
+      "startingEquipment": ["Spellbook", "Arcane focus", "Scholar's pack", "Dagger"],
+      "features": [
+        {
+          "name": "Spellcasting",
+          "description": "You have a spellbook containing spells that show your true power.",
+          "levelUnlocked": 1
+        },
+        {
+          "name": "Arcane Recovery",
+          "description": "You can regain magical energy by studying your spellbook.",
+          "levelUnlocked": 1
+        }
+      ],
+      "spellcasting": {
+        "spellcastingAbility": "Intelligence",
+        "cantripsKnown": 3,
+        "spellsKnown": 0,
+        "spellSlots": 2,
+        "ritualCasting": true,
+        "spellbook": true,
+        "spellcastingFocus": "Arcane focus"
+      },
+      "subclasses": [
+        {
+          "name": "School of Evocation",
+          "description": "Focuses on magic that creates powerful elemental effects.",
+          "features": [
+            {
+              "name": "Sculpt Spells",
+              "description": "You can protect allies from your area-of-effect spells.",
+              "levelUnlocked": 2
+            },
+            {
+              "name": "Potent Cantrip",
+              "description": "Your damaging cantrips affect even those who avoid the brunt of the effect.",
+              "levelUnlocked": 6
+            }
+          ],
+          "source": "Player's Handbook",
+          "pros": [
+            "Excellent damage output with evocation spells",
+            "Sculpt Spells prevents friendly fire",
+            "Potent Cantrip ensures cantrips always deal some damage",
+            "Empowered Evocation adds Intelligence to damage",
+            "Great for blaster builds focused on damage"
+          ],
+          "cons": [
+            "Limited utility compared to other schools",
+            "Focused primarily on damage dealing",
+            "May struggle in social encounters",
+            "Fewer defensive options than abjuration",
+            "Can be one-dimensional in playstyle"
+          ],
+          "bestFor": [
+            "Players who want to be the party's primary damage dealer",
+            "Those who enjoy blasting enemies with fireballs",
+            "Characters focused on battlefield control through damage",
+            "Players who prefer straightforward spellcasting"
+          ],
+          "playStyle": "Destructive spellcaster focused on dealing maximum damage while protecting allies from collateral damage"
+        }
+      ]
     }
-  }
+  ],
+  "races": [
+    {
+      "name": "Elf",
+      "description": "Elves are a magical people of otherworldly grace, living in places of ethereal beauty.",
+      "abilityScoreIncrease": {
+        "Dexterity": 2
+      },
+      "speed": 30,
+      "languages": ["Common", "Elvish"],
+      "traits": [
+        {
+          "name": "Darkvision",
+          "description": "You can see in dim light within 60 feet as if it were bright light."
+        },
+        {
+          "name": "Keen Senses",
+          "description": "You have proficiency in the Perception skill."
+        },
+        {
+          "name": "Fey Ancestry",
+          "description": "You have advantage on saving throws against being charmed."
+        },
+        {
+          "name": "Trance",
+          "description": "Elves don't need to sleep. Instead, they meditate deeply for 4 hours a day."
+        }
+      ],
+      "source": "Player's Handbook",
+      "subraces": [
+        {
+          "name": "High Elf",
+          "description": "High elves are graceful warriors and wizards who originated from the realm of Faerie.",
+          "abilityScoreIncrease": {
+            "Intelligence": 1
+          },
+          "traits": [
+            {
+              "name": "Elf Weapon Training",
+              "description": "You have proficiency with longswords, shortbows, longbows, and shortswords."
+            },
+            {
+              "name": "Cantrip",
+              "description": "You know one cantrip of your choice from the wizard spell list."
+            },
+            {
+              "name": "Extra Language",
+              "description": "You can speak, read, and write one extra language of your choice."
+            }
+          ],
+          "source": "Player's Handbook",
+          "pros": [
+            "Free wizard cantrip provides magical versatility",
+            "Intelligence bonus great for wizards and artificers",
+            "Weapon training gives martial options to casters",
+            "Extra language aids in social encounters",
+            "Excellent for gish (warrior-mage) builds"
+          ],
+          "cons": [
+            "Intelligence bonus less useful for non-caster classes",
+            "Weapon training may be redundant for some classes",
+            "Cantrip uses Intelligence, may not scale well",
+            "Less specialized than other elf subraces"
+          ],
+          "bestFor": [
+            "Wizards and other Intelligence-based casters",
+            "Eldritch Knights and other gish builds",
+            "Characters who want magical and martial options",
+            "Players who enjoy versatile characters"
+          ],
+          "playStyle": "Versatile character combining martial prowess with arcane magic, excellent for hybrid builds"
+        },
+        {
+          "name": "Wood Elf",
+          "description": "Wood elves have keen senses and intuition, and their fleet feet carry them quickly through their forest homes.",
+          "abilityScoreIncrease": {
+            "Wisdom": 1
+          },
+          "traits": [
+            {
+              "name": "Elf Weapon Training",
+              "description": "You have proficiency with longswords, shortbows, longbows, and shortswords."
+            },
+            {
+              "name": "Fleet of Foot",
+              "description": "Your base walking speed increases to 35 feet."
+            },
+            {
+              "name": "Mask of the Wild",
+              "description": "You can attempt to hide even when only lightly obscured by foliage."
+            }
+          ],
+          "source": "Player's Handbook",
+          "pros": [
+            "Wisdom bonus excellent for druids, clerics, and rangers",
+            "Increased speed provides tactical mobility",
+            "Mask of the Wild enables stealth in natural environments",
+            "Weapon training includes longbow proficiency",
+            "Perfect for nature-based characters"
+          ],
+          "cons": [
+            "Wisdom bonus less useful for non-Wisdom classes",
+            "Mask of the Wild only works in natural settings",
+            "Weapon training may overlap with class proficiencies",
+            "Less versatile than High Elf's cantrip"
+          ],
+          "bestFor": [
+            "Rangers, druids, and clerics",
+            "Characters focused on archery and stealth",
+            "Nature-themed campaigns and characters",
+            "Players who enjoy mobility and stealth"
+          ],
+          "playStyle": "Swift, stealthy character at home in natural environments, excellent archer and scout"
+        }
+      ]
+    },
+    {
+      "name": "Human",
+      "description": "Humans are the most adaptable and ambitious people among the common races.",
+      "abilityScoreIncrease": {
+        "Strength": 1,
+        "Dexterity": 1,
+        "Constitution": 1,
+        "Intelligence": 1,
+        "Wisdom": 1,
+        "Charisma": 1
+      },
+      "speed": 30,
+      "languages": ["Common", "One additional language of your choice"],
+      "traits": [
+        {
+          "name": "Extra Skill",
+          "description": "You gain proficiency in one skill of your choice."
+        },
+        {
+          "name": "Extra Feat",
+          "description": "You gain one feat of your choice."
+        }
+      ],
+      "source": "Player's Handbook",
+      "subraces": [
+        {
+          "name": "Variant Human",
+          "description": "Some humans are born with exceptional abilities.",
+          "abilityScoreIncrease": {
+            "Any Two Different": 1
+          },
+          "traits": [
+            {
+              "name": "Skills",
+              "description": "You gain proficiency in one skill of your choice."
+            },
+            {
+              "name": "Feat",
+              "description": "You gain one feat of your choice."
+            }
+          ],
+          "source": "Player's Handbook",
+          "pros": [
+            "Free feat at 1st level provides significant customization",
+            "Flexible ability score increases fit any build",
+            "Extra skill proficiency adds versatility",
+            "Can take powerful feats like Great Weapon Master early",
+            "Excellent for optimized builds"
+          ],
+          "cons": [
+            "No special abilities like darkvision or resistances",
+            "May feel 'boring' compared to exotic races",
+            "Smaller total ability score bonuses than standard human",
+            "Relies heavily on feat choice for uniqueness"
+          ],
+          "bestFor": [
+            "Optimized builds that benefit from early feats",
+            "Any class that wants specific feat synergies",
+            "Players who enjoy customization and flexibility",
+            "Characters focused on mechanical optimization"
+          ],
+          "playStyle": "Highly customizable character that can excel in any role through careful feat selection and ability score placement"
+        }
+      ]
+    }
+  ],
+  "spells": [
+    {
+      "name": "Fire Bolt",
+      "school": "Evocation",
+      "level": 0,
+      "castingTime": "1 action",
+      "range": "120 feet",
+      "components": "V, S",
+      "duration": "Instantaneous",
+      "description": "You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 fire damage. A flammable object hit by this spell ignites if it isn't being worn or carried.",
+      "classes": ["Sorcerer", "Wizard"]
+    },
+    {
+      "name": "Mage Hand",
+      "school": "Conjuration",
+      "level": 0,
+      "castingTime": "1 action",
+      "range": "30 feet",
+      "components": "V, S",
+      "duration": "1 minute",
+      "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration or until you dismiss it as an action. You can use your action to control the hand.",
+      "classes": ["Bard", "Sorcerer", "Warlock", "Wizard"]
+    },
+    {
+      "name": "Prestidigitation",
+      "school": "Transmutation",
+      "level": 0,
+      "castingTime": "1 action",
+      "range": "10 feet",
+      "components": "V, S",
+      "duration": "Up to 1 hour",
+      "description": "This spell is a minor magical trick that novice spellcasters use for practice. You create one of several magical effects within range.",
+      "classes": ["Bard", "Sorcerer", "Warlock", "Wizard"]
+    }
+  ],
+  "equipment": [
+    {
+      "name": "Longsword",
+      "type": "Weapon",
+      "category": "Martial Melee Weapons",
+      "cost": "15 gp",
+      "damage": "1d8 slashing",
+      "weight": "3 lb.",
+      "properties": ["Versatile (1d10)"]
+    },
+    {
+      "name": "Chain Mail",
+      "type": "Armor",
+      "category": "Heavy Armor",
+      "cost": "75 gp",
+      "armorClass": "16",
+      "weight": "55 lb.",
+      "properties": ["Stealth Disadvantage"]
+    },
+    {
+      "name": "Shield",
+      "type": "Armor",
+      "category": "Shield",
+      "cost": "10 gp",
+      "armorClass": "+2",
+      "weight": "6 lb.",
+      "properties": []
+    }
+  ]
 }
