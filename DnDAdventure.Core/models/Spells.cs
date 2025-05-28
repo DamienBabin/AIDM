@@ -15,17 +15,6 @@ namespace DnDAdventure.Core.Models
         public string Source { get; set; } = "Player's Handbook";
     }
 
-    public class SpellcastingInfo
-    {
-        public string SpellcastingAbility { get; set; } = string.Empty; // "Intelligence", "Wisdom", "Charisma"
-        public int CantripsKnown { get; set; } = 0;
-        public int SpellsKnown { get; set; } = 0;
-        public int SpellSlots { get; set; } = 0;
-        public bool RitualCasting { get; set; } = false;
-        public bool Spellbook { get; set; } = false; // For wizards
-        public string SpellcastingFocus { get; set; } = string.Empty;
-    }
-
     public class SpellList
     {
         public List<Spell> Spells { get; set; } = new()

@@ -842,6 +842,27 @@ class CharacterCreator {
             }
         }
 
+        // Calculate final ability scores with racial bonuses
+        const finalAbilityScores = {};
+        Object.keys(this.abilityScores).forEach(ability => {
+            finalAbilityScores[ability] = this.abilityScores[ability] + (this.racialBonuses[ability] || 0);
+        });
+
+        // Collect all racial traits
+        const allRacialTraits = [...this.selectedRace.traits.map(t => t.name)];
+        if (this.selectedSubrace) {
+            allRacialTraits.push(...this.selectedSubrace.traits.map(t => t.name));
+        }
+
+        // Collect all languages
+        const allLanguages = [...this.selectedRace.languages];
+        
+        // Calculate speed (Wood Elf gets +5 speed)
+        let speed = this.selectedRace.speed;
+        if (this.selectedSubrace && this.selectedSubrace.name === "Wood Elf") {
+            speed = 35;
+        }
+
         // Create character object
         const character = {
             name: name,
@@ -850,19 +871,18 @@ class CharacterCreator {
             subrace: this.selectedSubrace ? this.selectedSubrace.name : null,
             class: this.selectedClass.name,
             subclass: this.selectedSubclass ? this.selectedSubclass.name : null,
-            abilityScores: { ...this.abilityScores },
+            baseAttributes: { ...this.abilityScores },
             racialBonuses: { ...this.racialBonuses },
-            finalAbilityScores: {},
+            attributes: { ...finalAbilityScores },
+            racialTraits: allRacialTraits,
             cantrips: this.selectedCantrips.map(c => c.name),
+            languages: allLanguages,
+            speed: speed,
             level: 1,
-            hitPoints: this.selectedClass.hitDie + Math.floor((this.abilityScores.Constitution + (this.racialBonuses.Constitution || 0) - 10) / 2),
-            armorClass: 10 + Math.floor((this.abilityScores.Dexterity + (this.racialBonuses.Dexterity || 0) - 10) / 2)
+            healthPoints: this.selectedClass.hitDie + Math.floor((finalAbilityScores.Constitution - 10) / 2),
+            maxHealthPoints: this.selectedClass.hitDie + Math.floor((finalAbilityScores.Constitution - 10) / 2),
+            armorClass: 10 + Math.floor((finalAbilityScores.Dexterity - 10) / 2)
         };
-
-        // Calculate final ability scores
-        Object.keys(this.abilityScores).forEach(ability => {
-            character.finalAbilityScores[ability] = this.abilityScores[ability] + (this.racialBonuses[ability] || 0);
-        });
 
         console.log('Character created:', character);
         alert(`Character "${name}" created successfully! Check the console for details.`);
