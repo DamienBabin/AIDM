@@ -88,20 +88,11 @@ namespace DnDAdventure.API.Controllers
             
             try
             {
-                // Create a temporary file to use the existing LoadFromJson method
-                var tempFileName = Path.GetTempFileName();
-                System.IO.File.WriteAllText(tempFileName, request.JsonContent);
-                
-                if (_worldService.LoadWorld(tempFileName))
+                if (_worldService.LoadWorldFromJson(request.JsonContent))
                 {
-                    // Clean up temp file
-                    System.IO.File.Delete(tempFileName);
-                    
                     return Ok(_worldService.CurrentWorld);
                 }
                 
-                // Clean up temp file on failure
-                System.IO.File.Delete(tempFileName);
                 return BadRequest("Failed to import JSON - invalid format or structure");
             }
             catch (Exception ex)
@@ -128,20 +119,11 @@ namespace DnDAdventure.API.Controllers
                 using var reader = new StreamReader(file.OpenReadStream());
                 var jsonContent = await reader.ReadToEndAsync();
                 
-                // Create a temporary file to use the existing LoadFromJson method
-                var tempFileName = Path.GetTempFileName();
-                await System.IO.File.WriteAllTextAsync(tempFileName, jsonContent);
-                
-                if (_worldService.LoadWorld(tempFileName))
+                if (_worldService.LoadWorldFromJson(jsonContent))
                 {
-                    // Clean up temp file
-                    System.IO.File.Delete(tempFileName);
-                    
                     return Ok(_worldService.CurrentWorld);
                 }
                 
-                // Clean up temp file on failure
-                System.IO.File.Delete(tempFileName);
                 return BadRequest("Failed to import file - invalid JSON format or structure");
             }
             catch (Exception ex)
@@ -158,46 +140,23 @@ namespace DnDAdventure.API.Controllers
                 return BadRequest("JSON content is required");
             }
             
-            try
+            var (isValid, message, world) = _worldService.ValidateJsonContent(request.JsonContent);
+            
+            var result = new ValidationResult
             {
-                // Try to deserialize without actually loading into the service
-                var options = new System.Text.Json.JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
-                    PropertyNameCaseInsensitive = true
-                };
-                
-                var testWorld = System.Text.Json.JsonSerializer.Deserialize<World>(request.JsonContent, options);
-                
-                if (testWorld != null)
-                {
-                    var result = new ValidationResult
-                    {
-                        IsValid = true,
-                        WorldName = testWorld.Name,
-                        CharacterCount = testWorld.Characters.Count,
-                        MapCount = testWorld.Maps.Count,
-                        NPCCount = testWorld.NPCs.Count,
-                        Message = "JSON is valid and ready for import"
-                    };
-                    
-                    return Ok(result);
-                }
-                
-                return Ok(new ValidationResult
-                {
-                    IsValid = false,
-                    Message = "JSON structure is invalid"
-                });
-            }
-            catch (Exception ex)
+                IsValid = isValid,
+                Message = message
+            };
+            
+            if (isValid && world != null)
             {
-                return Ok(new ValidationResult
-                {
-                    IsValid = false,
-                    Message = $"JSON validation failed: {ex.Message}"
-                });
+                result.WorldName = world.Name;
+                result.CharacterCount = world.Characters.Count;
+                result.MapCount = world.Maps.Count;
+                result.NPCCount = world.NPCs.Count;
             }
+            
+            return Ok(result);
         }
         
         public class SaveGameRequest

@@ -23,8 +23,11 @@ namespace DnDAdventure.Core.Services
         World CreateNewWorld(string name, string description = "");
         bool LoadWorld(string filePath);
         bool LoadWorldFromJson(string jsonContent);
+        (bool IsValid, string Message, World? World) ValidateJsonContent(string jsonContent);
         string? SaveWorld(string? worldName = null);
         string? CreateQuickSave();
         List<SaveFileInfo> GetAvailableSaves();
+        void AddCharacter(Character character);
+        void AddGameState(GameState gameState);
     }
 }

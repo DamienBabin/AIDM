@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace DnDAdventure.Core.Models
 {
@@ -15,8 +16,8 @@ namespace DnDAdventure.Core.Models
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         
-        // The actual 9x9 grid of map cells
-        public MapCell[,] Grid { get; set; } = new MapCell[9, 9];
+        // The actual 9x9 grid of map cells - using jagged array for JSON serialization
+        public MapCell[][] Grid { get; set; } = new MapCell[9][];
         
         // Coordinates within the larger world (for connecting multiple maps)
         public int WorldX { get; set; }
@@ -33,9 +34,10 @@ namespace DnDAdventure.Core.Models
             // Initialize all grid cells
             for (int x = 0; x < 9; x++)
             {
+                Grid[x] = new MapCell[9];
                 for (int y = 0; y < 9; y++)
                 {
-                    Grid[x, y] = new MapCell
+                    Grid[x][y] = new MapCell
                     {
                         X = x,
                         Y = y,
@@ -54,7 +56,7 @@ namespace DnDAdventure.Core.Models
             if (x < 0 || x >= 9 || y < 0 || y >= 9)
                 throw new ArgumentOutOfRangeException("Coordinates must be within the 9x9 grid");
                 
-            return Grid[x, y];
+            return Grid[x][y];
         }
         
         /// <summary>
@@ -67,7 +69,7 @@ namespace DnDAdventure.Core.Models
                 
             cell.X = x;
             cell.Y = y;
-            Grid[x, y] = cell;
+            Grid[x][y] = cell;
         }
         
         /// <summary>
@@ -78,7 +80,7 @@ namespace DnDAdventure.Core.Models
             if (x < 0 || x >= 9 || y < 0 || y >= 9)
                 throw new ArgumentOutOfRangeException("Coordinates must be within the 9x9 grid");
                 
-            updateAction(Grid[x, y]);
+            updateAction(Grid[x][y]);
         }
         
         /// <summary>
@@ -115,7 +117,7 @@ namespace DnDAdventure.Core.Models
                 
                 for (int x = 0; x < 9; x++)
                 {
-                    var cell = Grid[x, y];
+                    var cell = Grid[x][y];
                     sb.Append($" {GetCellSymbol(cell)} ");
                 }
                 
