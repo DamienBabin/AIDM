@@ -1,0 +1,300 @@
+@page
+@model AdventureModel
+@{
+    ViewData["Title"] = "D&D Adventure - Game";
+}
+
+<style>
+.adventure-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.story-panel {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #dee2e6;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.story-text {
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.choices-container {
+    margin-top: 20px;
+}
+
+.choice-button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.choice-button:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.choice-button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.character-panel {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.character-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.stat-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+.inventory-section {
+    margin-top: 15px;
+}
+
+.inventory-item {
+    display: inline-block;
+    background: #e9ecef;
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 15px;
+    font-size: 0.9em;
+}
+
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.npc-interactions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.npc-button {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.npc-button:hover {
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+    transform: translateY(-1px);
+}
+
+.game-controls {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.control-button {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin: 2px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.control-button:hover {
+    background: #5a6268;
+}
+
+@media (max-width: 768px) {
+    .adventure-container {
+        padding: 10px;
+    }
+    
+    .story-panel {
+        padding: 20px;
+    }
+    
+    .character-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .game-controls {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-bottom: 20px;
+    }
+}
+</style>
+
+<div class="adventure-container">
+    <!-- Game Controls -->
+    <div class="game-controls">
+        <button type="button" class="control-button" id="save-game">💾 Save</button>
+        <button type="button" class="control-button" id="load-game">📁 Load</button>
+        <button type="button" class="control-button" id="return-home">🏠 Home</button>
+    </div>
+
+    <!-- Character Panel -->
+    <div class="character-panel">
+        <h4>🎭 <span id="character-name">Loading...</span></h4>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="character-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="hp-current">--</div>
+                        <div class="stat-label">HP</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="str-value">--</div>
+                        <div class="stat-label">STR</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="dex-value">--</div>
+                        <div class="stat-label">DEX</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="con-value">--</div>
+                        <div class="stat-label">CON</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="int-value">--</div>
+                        <div class="stat-label">INT</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="wis-value">--</div>
+                        <div class="stat-label">WIS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="cha-value">--</div>
+                        <div class="stat-label">CHA</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div><strong>Race:</strong> <span id="character-race">--</span></div>
+                <div><strong>Class:</strong> <span id="character-class">--</span></div>
+                <div><strong>Level:</strong> <span id="character-level">1</span></div>
+                <div><strong>Location:</strong> <span id="current-location">--</span></div>
+            </div>
+        </div>
+        
+        <div class="inventory-section">
+            <h6>🎒 Inventory</h6>
+            <div id="inventory-items">
+                <span class="inventory-item">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Story Panel -->
+    <div class="story-panel">
+        <div class="loading-spinner" id="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading adventure...</p>
+        </div>
+        
+        <div id="story-content" style="display: none;">
+            <div class="story-text" id="story-description">
+                Welcome to your D&D adventure! Your story is about to begin...
+            </div>
+            
+            <div class="choices-container" id="choices-container">
+                <!-- Choices will be populated dynamically -->
+            </div>
+            
+            <div class="npc-interactions" id="npc-interactions" style="display: none;">
+                <h6>💬 NPCs in this area:</h6>
+                <div id="npc-buttons">
+                    <!-- NPC interaction buttons will be populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quest Log -->
+    <div class="character-panel">
+        <h5>📜 Quest Log</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Active Quests</h6>
+                <ul id="active-quests" class="list-group list-group-flush">
+                    <li class="list-group-item">No active quests</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>Completed Quests</h6>
+                <ul id="completed-quests" class="list-group list-group-flush">
+                    <li class="list-group-item">No completed quests</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden inputs for game state -->
+<input type="hidden" id="game-state-id" value="@Model.GameStateId" />
+<input type="hidden" id="character-id" value="@Model.CharacterId" />
+
+<!-- Include JavaScript -->
+<script>
+    // Make API base URL available to JavaScript
+    window.apiBaseUrl = '@Model.ApiBaseUrl';
+</script>
+<script src="~/js/adventure-game.js"></script>
+
+@section Scripts {
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+}
