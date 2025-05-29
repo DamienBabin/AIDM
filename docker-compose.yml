@@ -21,7 +21,7 @@ services:
       - "5001:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ApiBaseUrl=http://localhost:5000
+      - ApiBaseUrl=http://api:80
     depends_on:
       - api
     restart: unless-stopped

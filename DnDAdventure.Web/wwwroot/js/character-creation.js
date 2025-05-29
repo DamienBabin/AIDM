@@ -27,10 +27,31 @@ class CharacterCreator {
     }
 
     async init() {
+        await this.loadWorlds();
         await this.loadRaces();
         await this.loadClasses();
         this.setupEventListeners();
         this.updateCharacterPreview();
+    }
+
+    async loadWorlds() {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/api/world`);
+            const worlds = await response.json();
+            
+            const worldSelect = document.getElementById('world-select');
+            if (worldSelect) {
+                // Keep the existing options and add loaded worlds
+                worlds.forEach(world => {
+                    const option = document.createElement('option');
+                    option.value = world.id;
+                    option.textContent = world.name;
+                    worldSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading worlds:', error);
+        }
     }
 
     setupEventListeners() {
@@ -816,7 +837,7 @@ class CharacterCreator {
         }
     }
 
-    createCharacter() {
+    async createCharacter() {
         // Validate required fields
         const name = document.getElementById('name').value.trim();
         if (!name) {
@@ -885,7 +906,72 @@ class CharacterCreator {
         };
 
         console.log('Character created:', character);
-        alert(`Character "${name}" created successfully! Check the console for details.`);
+        try {
+            // Disable the create button to prevent double-clicking
+            const createButton = document.getElementById('create-character');
+            createButton.disabled = true;
+            createButton.textContent = 'Creating Character...';
+
+            // Check if world is selected
+            const selectedWorld = document.getElementById('world-select').value;
+            if (!selectedWorld) {
+                alert('Please select a world first.');
+                createButton.disabled = false;
+                createButton.textContent = '🎭 Create Character';
+                return;
+            }
+
+            // Save the character
+            const characterResponse = await fetch(`${this.apiBaseUrl}/api/game/character`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(character)
+            });
+
+            if (!characterResponse.ok) {
+                throw new Error('Failed to create character');
+            }
+
+            const savedCharacter = await characterResponse.json();
+            console.log('Character saved:', savedCharacter);
+
+            // Create a new game state
+            const gameStateData = {
+                characterId: savedCharacter.id,
+                worldId: selectedWorld === 'new' ? null : selectedWorld,
+                worldName: selectedWorld === 'new' ? document.getElementById('world-name').value : null,
+                worldDescription: selectedWorld === 'new' ? document.getElementById('world-description').value : null
+            };
+
+            const gameStateResponse = await fetch(`${this.apiBaseUrl}/api/game/start`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(gameStateData)
+            });
+
+            if (!gameStateResponse.ok) {
+                throw new Error('Failed to start game');
+            }
+
+            const gameState = await gameStateResponse.json();
+            console.log('Game started:', gameState);
+
+            // Redirect to adventure page
+            window.location.href = `/Adventure?gameStateId=${gameState.id}&characterId=${savedCharacter.id}`;
+
+        } catch (error) {
+            console.error('Error creating character or starting game:', error);
+            alert('Failed to create character and start game. Please try again.');
+            
+            // Re-enable the create button
+            const createButton = document.getElementById('create-character');
+            createButton.disabled = false;
+            createButton.textContent = '🎭 Create Character';
+        }
     }
 
     resetForm() {
