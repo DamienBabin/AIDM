@@ -1,9 +1,8 @@
-// Character Creation JavaScript - Updated with Adventure Integration
+// Character Creation JavaScript - Updated for Flattened Races
 class CharacterCreator {
     constructor() {
         this.apiBaseUrl = window.apiBaseUrl || 'http://localhost:5000';
-        this.selectedRace = null;
-        this.selectedSubrace = null;
+        this.selectedRaceData = null; // Store the flattened race data
         this.selectedClass = null;
         this.selectedSubclass = null;
         this.availableCantrips = [];
@@ -27,21 +26,37 @@ class CharacterCreator {
     }
 
     async init() {
+        await this.loadWorlds();
         await this.loadRaces();
         await this.loadClasses();
         this.setupEventListeners();
         this.updateCharacterPreview();
     }
 
+    async loadWorlds() {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/api/world`);
+            const worlds = await response.json();
+            
+            const worldSelect = document.getElementById('world-select');
+            if (worldSelect) {
+                // Keep the existing options and add loaded worlds
+                worlds.forEach(world => {
+                    const option = document.createElement('option');
+                    option.value = world.id;
+                    option.textContent = world.name;
+                    worldSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading worlds:', error);
+        }
+    }
+
     setupEventListeners() {
         // Race selection
         document.getElementById('race').addEventListener('change', (e) => {
             this.onRaceChange(e.target.value);
-        });
-
-        // Subrace selection
-        document.getElementById('subrace').addEventListener('change', (e) => {
-            this.onSubraceChange(e.target.value);
         });
 
         // Class selection
@@ -95,7 +110,7 @@ class CharacterCreator {
 
     async loadRaces() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/api/classesraces/races`);
+            const response = await fetch(`${this.apiBaseUrl}/api/classesraces/races/flattened`);
             const races = await response.json();
             
             const raceSelect = document.getElementById('race');
@@ -104,7 +119,7 @@ class CharacterCreator {
             races.forEach(race => {
                 const option = document.createElement('option');
                 option.value = race.name;
-                option.textContent = race.name;
+                option.textContent = race.displayName;
                 raceSelect.appendChild(option);
             });
         } catch (error) {
@@ -135,11 +150,19 @@ class CharacterCreator {
         if (!raceName) return;
 
         try {
-            const response = await fetch(`${this.apiBaseUrl}/api/classesraces/race/${encodeURIComponent(raceName)}`);
-            this.selectedRace = await response.json();
+            // Get the flattened race data again to find the selected race
+            const response = await fetch(`${this.apiBaseUrl}/api/classesraces/races/flattened`);
+            const races = await response.json();
             
-            // Load subraces
-            await this.loadSubraces(raceName);
+            // Find the selected race from the flattened list
+            this.selectedRaceData = races.find(r => r.name === raceName);
+            if (!this.selectedRaceData) {
+                console.error('Selected race not found in flattened data');
+                return;
+            }
+            
+            // Hide the subrace dropdown since we're using flattened data
+            document.getElementById('subrace').style.display = 'none';
             
             // Show race info
             this.displayRaceInfo();
@@ -155,36 +178,8 @@ class CharacterCreator {
         }
     }
 
-    async loadSubraces(raceName) {
-        const subraceSelect = document.getElementById('subrace');
-        
-        if (this.selectedRace.subraces && this.selectedRace.subraces.length > 0) {
-            subraceSelect.style.display = 'block';
-            subraceSelect.innerHTML = '<option value="" selected disabled>Select Subrace</option>';
-            
-            this.selectedRace.subraces.forEach(subrace => {
-                const option = document.createElement('option');
-                option.value = subrace.name;
-                option.textContent = subrace.name;
-                subraceSelect.appendChild(option);
-            });
-        } else {
-            subraceSelect.style.display = 'none';
-            this.selectedSubrace = null;
-        }
-    }
-
-    async onSubraceChange(subraceName) {
-        if (!subraceName || !this.selectedRace) return;
-
-        this.selectedSubrace = this.selectedRace.subraces.find(s => s.name === subraceName);
-        this.displaySubraceInfo();
-        this.updateRacialBonuses();
-        this.updateCharacterPreview();
-    }
-
     displayRaceInfo() {
-        if (!this.selectedRace) return;
+        if (!this.selectedRaceData) return;
 
         const panel = document.getElementById('race-info-panel');
         const description = document.getElementById('race-description');
@@ -192,11 +187,11 @@ class CharacterCreator {
         const traits = document.getElementById('race-traits');
 
         panel.style.display = 'block';
-        description.textContent = this.selectedRace.description;
+        description.textContent = this.selectedRaceData.description;
 
         // Ability score increases
         abilityScores.innerHTML = '';
-        Object.entries(this.selectedRace.abilityScoreIncrease).forEach(([ability, bonus]) => {
+        Object.entries(this.selectedRaceData.abilityScoreIncrease).forEach(([ability, bonus]) => {
             const li = document.createElement('li');
             li.className = 'list-group-item d-flex justify-content-between';
             li.innerHTML = `<span>${ability}</span><span>+${bonus}</span>`;
@@ -205,11 +200,65 @@ class CharacterCreator {
 
         // Racial traits
         traits.innerHTML = '';
-        this.selectedRace.traits.forEach(trait => {
+        this.selectedRaceData.traits.forEach(trait => {
             const li = document.createElement('li');
             li.innerHTML = `<strong>${trait.name}:</strong> ${trait.description}`;
             traits.appendChild(li);
         });
+
+        // Display subrace info if this is a subrace
+        if (this.selectedRaceData.isSubrace && this.selectedRaceData.pros && this.selectedRaceData.pros.length > 0) {
+            this.displaySubraceInfo();
+        }
+    }
+
+    displaySubraceInfo() {
+        if (!this.selectedRaceData || !this.selectedRaceData.isSubrace) return;
+
+        // Create or update subrace info panel
+        let subracePanel = document.getElementById('subrace-info-panel');
+        if (!subracePanel) {
+            subracePanel = document.createElement('div');
+            subracePanel.id = 'subrace-info-panel';
+            subracePanel.className = 'mt-3 p-3 bg-light rounded';
+            document.getElementById('race-info-panel').appendChild(subracePanel);
+        }
+
+        subracePanel.innerHTML = `
+            <h6>${this.selectedRaceData.subraceName} Details</h6>
+            ${this.selectedRaceData.pros && this.selectedRaceData.pros.length > 0 ? `
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6 class="text-success">✓ Pros</h6>
+                        <ul class="list-unstyled">
+                            ${this.selectedRaceData.pros.map(pro => `<li class="text-success">• ${pro}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-danger">✗ Cons</h6>
+                        <ul class="list-unstyled">
+                            ${this.selectedRaceData.cons && this.selectedRaceData.cons.length > 0 ? 
+                                this.selectedRaceData.cons.map(con => `<li class="text-danger">• ${con}</li>`).join('') : 
+                                '<li class="text-muted">• No significant drawbacks</li>'}
+                        </ul>
+                    </div>
+                </div>
+                ${this.selectedRaceData.bestFor && this.selectedRaceData.bestFor.length > 0 ? `
+                    <div class="mt-3">
+                        <h6 class="text-primary">🎯 Best For</h6>
+                        <ul class="list-unstyled">
+                            ${this.selectedRaceData.bestFor.map(use => `<li class="text-primary">• ${use}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+                ${this.selectedRaceData.playStyle ? `
+                    <div class="mt-3">
+                        <h6 class="text-info">🎭 Play Style</h6>
+                        <p class="text-info">${this.selectedRaceData.playStyle}</p>
+                    </div>
+                ` : ''}
+            ` : ''}
+        `;
     }
 
     async onClassChange(className) {
@@ -296,6 +345,34 @@ class CharacterCreator {
             div.innerHTML = `<strong>${feature.name} (Level ${feature.levelUnlocked}):</strong> ${feature.description}`;
             features.appendChild(div);
         });
+    }
+
+    displaySubclassInfo() {
+        if (!this.selectedSubclass) return;
+
+        // Create or update subclass info panel
+        let subclassPanel = document.getElementById('subclass-info-panel');
+        if (!subclassPanel) {
+            subclassPanel = document.createElement('div');
+            subclassPanel.id = 'subclass-info-panel';
+            subclassPanel.className = 'mt-3 p-3 bg-light rounded';
+            document.getElementById('class-info-panel').appendChild(subclassPanel);
+        }
+
+        subclassPanel.innerHTML = `
+            <h6>${this.selectedSubclass.name} Details</h6>
+            <p><strong>Description:</strong> ${this.selectedSubclass.description}</p>
+            ${this.selectedSubclass.features && this.selectedSubclass.features.length > 0 ? `
+                <div class="mt-2">
+                    <strong>Subclass Features:</strong>
+                    ${this.selectedSubclass.features.map(feature => `
+                        <div class="mb-2">
+                            <strong>${feature.name} (Level ${feature.levelUnlocked}):</strong> ${feature.description}
+                        </div>
+                    `).join('')}
+                </div>
+            ` : ''}
+        `;
     }
 
     async loadCantrips(className) {
@@ -583,57 +660,13 @@ class CharacterCreator {
     updateRacialBonuses() {
         this.racialBonuses = {};
         
-        if (this.selectedRace) {
-            Object.entries(this.selectedRace.abilityScoreIncrease).forEach(([ability, bonus]) => {
+        if (this.selectedRaceData) {
+            Object.entries(this.selectedRaceData.abilityScoreIncrease).forEach(([ability, bonus]) => {
                 if (ability !== "Any Two Different") {
                     this.racialBonuses[ability] = (this.racialBonuses[ability] || 0) + bonus;
                 }
             });
         }
-        
-        if (this.selectedSubrace) {
-            Object.entries(this.selectedSubrace.abilityScoreIncrease).forEach(([ability, bonus]) => {
-                if (ability !== "Any Two Different") {
-                    this.racialBonuses[ability] = (this.racialBonuses[ability] || 0) + bonus;
-                }
-            });
-        }
-    }
-
-    displaySubraceInfo() {
-        if (!this.selectedSubrace) return;
-
-        // Create or update subrace info panel
-        let subracePanel = document.getElementById('subrace-info-panel');
-        if (!subracePanel) {
-            subracePanel = document.createElement('div');
-            subracePanel.id = 'subrace-info-panel';
-            subracePanel.className = 'mt-3 p-3 bg-light rounded';
-            document.getElementById('race-info-panel').appendChild(subracePanel);
-        }
-
-        subracePanel.innerHTML = `
-            <h6>${this.selectedSubrace.name} Details</h6>
-            <p><strong>Description:</strong> ${this.selectedSubrace.description}</p>
-        `;
-    }
-
-    displaySubclassInfo() {
-        if (!this.selectedSubclass) return;
-
-        // Create or update subclass info panel
-        let subclassPanel = document.getElementById('subclass-info-panel');
-        if (!subclassPanel) {
-            subclassPanel = document.createElement('div');
-            subclassPanel.id = 'subclass-info-panel';
-            subclassPanel.className = 'mt-3 p-3 bg-light rounded';
-            document.getElementById('class-info-panel').appendChild(subclassPanel);
-        }
-
-        subclassPanel.innerHTML = `
-            <h6>${this.selectedSubclass.name} Details</h6>
-            <p><strong>Description:</strong> ${this.selectedSubclass.description}</p>
-        `;
     }
 
     updateCharacterPreview() {
@@ -660,11 +693,7 @@ class CharacterCreator {
             nameElement.textContent = document.getElementById('name').value || '-';
         }
         if (raceElement) {
-            let raceText = this.selectedRace ? this.selectedRace.name : '-';
-            if (this.selectedSubrace) {
-                raceText += ` (${this.selectedSubrace.name})`;
-            }
-            raceElement.textContent = raceText;
+            raceElement.textContent = this.selectedRaceData ? this.selectedRaceData.displayName : '-';
         }
         if (classElement) {
             let classText = this.selectedClass ? this.selectedClass.name : '-';
@@ -750,20 +779,13 @@ class CharacterCreator {
             return;
         }
 
-        if (!this.selectedRace) {
+        if (!this.selectedRaceData) {
             alert('Please select a race.');
             return;
         }
 
         if (!this.selectedClass) {
             alert('Please select a class.');
-            return;
-        }
-
-        // Check if world is selected
-        const worldSelect = document.getElementById('world-select');
-        if (!worldSelect || !worldSelect.value) {
-            alert('Please select a world first.');
             return;
         }
 
@@ -782,5 +804,162 @@ class CharacterCreator {
         });
 
         // Collect all racial traits
-        const allRacialTraits = [...this.selectedRace.traits.map(t => t.name)];
-        if (this.selectedSubrace) {
+        const allRacialTraits = this.selectedRaceData.traits.map(t => t.name);
+        
+        // Collect all languages
+        const allLanguages = [...this.selectedRaceData.languages];
+        
+        // Calculate speed
+        let speed = this.selectedRaceData.speed;
+
+        // Create character object
+        const character = {
+            name: name,
+            background: document.getElementById('background').value,
+            race: this.selectedRaceData.raceName,
+            subrace: this.selectedRaceData.isSubrace ? this.selectedRaceData.subraceName : null,
+            class: this.selectedClass.name,
+            subclass: this.selectedSubclass ? this.selectedSubclass.name : null,
+            baseAttributes: { ...this.abilityScores },
+            racialBonuses: { ...this.racialBonuses },
+            attributes: { ...finalAbilityScores },
+            racialTraits: allRacialTraits,
+            cantrips: this.selectedCantrips.map(c => c.name),
+            languages: allLanguages,
+            speed: speed,
+            level: 1,
+            healthPoints: this.selectedClass.hitDie + Math.floor((finalAbilityScores.Constitution - 10) / 2),
+            maxHealthPoints: this.selectedClass.hitDie + Math.floor((finalAbilityScores.Constitution - 10) / 2),
+            armorClass: 10 + Math.floor((finalAbilityScores.Dexterity - 10) / 2)
+        };
+
+        console.log('Character created:', character);
+        try {
+            // Disable the create button to prevent double-clicking
+            const createButton = document.getElementById('create-character');
+            createButton.disabled = true;
+            createButton.textContent = 'Creating Character...';
+
+            // Check if world is selected
+            const selectedWorld = document.getElementById('world-select').value;
+            if (!selectedWorld) {
+                alert('Please select a world first.');
+                createButton.disabled = false;
+                createButton.textContent = '🎭 Create Character';
+                return;
+            }
+
+            // Save the character
+            const characterResponse = await fetch(`${this.apiBaseUrl}/api/game/character`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(character)
+            });
+
+            if (!characterResponse.ok) {
+                throw new Error('Failed to create character');
+            }
+
+            const savedCharacter = await characterResponse.json();
+            console.log('Character saved:', savedCharacter);
+
+            // Create a new game state
+            const gameStateData = {
+                characterId: savedCharacter.id,
+                worldId: selectedWorld === 'new' ? null : selectedWorld,
+                worldName: selectedWorld === 'new' ? document.getElementById('world-name').value : null,
+                worldDescription: selectedWorld === 'new' ? document.getElementById('world-description').value : null
+            };
+
+            const gameStateResponse = await fetch(`${this.apiBaseUrl}/api/game/start`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(gameStateData)
+            });
+
+            if (!gameStateResponse.ok) {
+                throw new Error('Failed to start game');
+            }
+
+            const gameState = await gameStateResponse.json();
+            console.log('Game started:', gameState);
+
+            // Redirect to adventure page
+            window.location.href = `/Adventure?gameStateId=${gameState.id}&characterId=${savedCharacter.id}`;
+
+        } catch (error) {
+            console.error('Error creating character or starting game:', error);
+            alert('Failed to create character and start game. Please try again.');
+            
+            // Re-enable the create button
+            const createButton = document.getElementById('create-character');
+            createButton.disabled = false;
+            createButton.textContent = '🎭 Create Character';
+        }
+    }
+
+    resetForm() {
+        if (!confirm('Are you sure you want to reset the entire form? This will clear all your selections.')) {
+            return;
+        }
+
+        // Reset all form fields
+        document.getElementById('name').value = '';
+        document.getElementById('background').value = '';
+        document.getElementById('race').value = '';
+        document.getElementById('subrace').style.display = 'none';
+        document.getElementById('class').value = '';
+        document.getElementById('subclass').style.display = 'none';
+        document.getElementById('ability-method').value = '';
+
+        // Reset internal state
+        this.selectedRaceData = null;
+        this.selectedClass = null;
+        this.selectedSubclass = null;
+        this.availableCantrips = [];
+        this.selectedCantrips = [];
+        this.maxCantrips = 0;
+        this.abilityScores = {
+            Strength: 10, Dexterity: 10, Constitution: 10,
+            Intelligence: 10, Wisdom: 10, Charisma: 10
+        };
+        this.racialBonuses = {};
+
+        // Hide panels
+        document.getElementById('race-info-panel').style.display = 'none';
+        document.getElementById('class-info-panel').style.display = 'none';
+        document.getElementById('cantrip-selection').style.display = 'none';
+        document.getElementById('ability-score-panel').style.display = 'none';
+
+        // Update character preview
+        this.updateCharacterPreview();
+    }
+}
+
+// Global functions for onclick handlers
+function adjustPointBuy(ability, change) {
+    if (window.characterCreator) {
+        window.characterCreator.adjustPointBuy(ability, change);
+    }
+}
+
+function rollStat(ability) {
+    if (window.characterCreator) {
+        window.characterCreator.rollStat(ability);
+    }
+}
+
+function rollAllStats() {
+    if (window.characterCreator) {
+        window.characterCreator.rollAllStats();
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.characterCreator = new CharacterCreator();
+});
