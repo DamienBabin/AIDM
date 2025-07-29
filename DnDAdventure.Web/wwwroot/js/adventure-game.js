@@ -31,21 +31,28 @@ class AdventureGame {
 
     async loadGameData() {
         try {
-            // Load character data
-            if (this.characterId) {
-                const characterResponse = await fetch(`${this.apiBaseUrl}/api/game/character/${this.characterId}`);
-                if (characterResponse.ok) {
-                    this.character = await characterResponse.json();
-                    this.updateCharacterDisplay();
-                }
-            }
-
-            // Load game state
+            // Load game state first (which contains character ID)
             if (this.gameStateId) {
                 const gameStateResponse = await fetch(`${this.apiBaseUrl}/api/game/${this.gameStateId}`);
                 if (gameStateResponse.ok) {
                     this.gameState = await gameStateResponse.json();
                     this.updateGameStateDisplay();
+                    
+                    // Get character ID from game state if not provided
+                    if (!this.characterId && this.gameState.characterId) {
+                        this.characterId = this.gameState.characterId;
+                    }
+                }
+            }
+
+            // Load character data using the GameController endpoint
+            if (this.characterId) {
+                const characterResponse = await fetch(`${this.apiBaseUrl}/api/game/character/${this.characterId}`);
+                if (characterResponse.ok) {
+                    this.character = await characterResponse.json();
+                    this.updateCharacterDisplay();
+                } else {
+                    console.warn('Character endpoint not found, character data may not be available');
                 }
             }
         } catch (error) {
@@ -63,16 +70,19 @@ class AdventureGame {
         document.getElementById('character-class').textContent = this.character.class || '--';
         document.getElementById('character-level').textContent = this.character.level || 1;
 
-        // Update ability scores
-        document.getElementById('str-value').textContent = this.character.strength || 10;
-        document.getElementById('dex-value').textContent = this.character.dexterity || 10;
-        document.getElementById('con-value').textContent = this.character.constitution || 10;
-        document.getElementById('int-value').textContent = this.character.intelligence || 10;
-        document.getElementById('wis-value').textContent = this.character.wisdom || 10;
-        document.getElementById('cha-value').textContent = this.character.charisma || 10;
+        // Update ability scores from Attributes dictionary
+        const attributes = this.character.attributes || {};
+        document.getElementById('str-value').textContent = attributes.Strength || attributes.strength || 10;
+        document.getElementById('dex-value').textContent = attributes.Dexterity || attributes.dexterity || 10;
+        document.getElementById('con-value').textContent = attributes.Constitution || attributes.constitution || 10;
+        document.getElementById('int-value').textContent = attributes.Intelligence || attributes.intelligence || 10;
+        document.getElementById('wis-value').textContent = attributes.Wisdom || attributes.wisdom || 10;
+        document.getElementById('cha-value').textContent = attributes.Charisma || attributes.charisma || 10;
 
         // Update HP
-        document.getElementById('hp-current').textContent = `${this.character.currentHitPoints || this.character.maxHitPoints || 10}/${this.character.maxHitPoints || 10}`;
+        const currentHP = this.character.healthPoints || this.character.currentHitPoints || this.character.maxHealthPoints || 10;
+        const maxHP = this.character.maxHealthPoints || this.character.maxHitPoints || 10;
+        document.getElementById('hp-current').textContent = `${currentHP}/${maxHP}`;
 
         // Update inventory
         this.updateInventoryDisplay();
@@ -82,9 +92,10 @@ class AdventureGame {
         const inventoryContainer = document.getElementById('inventory-items');
         if (!inventoryContainer) return;
 
-        if (this.character?.equipment && this.character.equipment.length > 0) {
+        const inventory = this.character?.inventory || this.character?.equipment || [];
+        if (inventory && inventory.length > 0) {
             inventoryContainer.innerHTML = '';
-            this.character.equipment.forEach(item => {
+            inventory.forEach(item => {
                 const itemElement = document.createElement('span');
                 itemElement.className = 'inventory-item';
                 itemElement.textContent = item.name || item;

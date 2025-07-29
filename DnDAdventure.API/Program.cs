@@ -22,8 +22,8 @@ builder.Services.AddSingleton<IRepository<GameState>>(provider =>
 // Configure HTTP client for AI service
 builder.Services.AddHttpClient();
 
-// Configure AI service - use a dummy endpoint for now
-string aiEndpoint = builder.Configuration["AI:Endpoint"] ?? "http://localhost:5001/generate";
+// Configure AI service - use our local AI controller
+string aiEndpoint = builder.Configuration["AI:Endpoint"] ?? "http://localhost:5000/api/ai/generate";
 builder.Services.AddSingleton<AdventureGenerator>(provider =>
 {
     var httpClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient();
