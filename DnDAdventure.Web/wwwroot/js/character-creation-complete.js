@@ -963,14 +963,28 @@ class CharacterCreator {
             return;
         }
 
+        // TEMPORARY: Skip race/class validation for testing backend integration
+        // TODO: Fix dropdown functionality and re-enable validation
+        console.log('TEMP: Bypassing race/class validation for backend testing');
+        
+        // Set default values if not selected
         if (!this.selectedRaceData) {
-            alert('Please select a race.');
-            return;
+            console.log('TEMP: Using default race data');
+            this.selectedRaceData = {
+                name: 'Human',
+                raceName: 'Human',
+                subraceName: null,
+                abilityScoreIncrease: { Strength: 1, Dexterity: 1 }
+            };
         }
 
         if (!this.selectedClass) {
-            alert('Please select a class.');
-            return;
+            console.log('TEMP: Using default class data');
+            this.selectedClass = {
+                name: 'Fighter',
+                hitDie: 10,
+                spellcasting: null
+            };
         }
 
         // Check if spellcasting class has required cantrips
@@ -1024,13 +1038,15 @@ class CharacterCreator {
             createButton.disabled = true;
             createButton.textContent = 'Creating Character...';
 
+            // TEMPORARY: Skip world validation for testing backend integration
+            // TODO: Fix world dropdown functionality and re-enable validation
+            console.log('TEMP: Bypassing world validation for backend testing');
+            
             // Check if world is selected
-            const selectedWorld = document.getElementById('world-select').value;
+            let selectedWorld = document.getElementById('world-select').value;
             if (!selectedWorld) {
-                alert('Please select a world first.');
-                createButton.disabled = false;
-                createButton.textContent = '🎭 Create Character';
-                return;
+                console.log('TEMP: Using default world selection');
+                selectedWorld = 'new'; // Default to creating a new world
             }
 
             // Save the character

@@ -5,6 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DnDAdventure.API.Controllers
 {
+    public class StartGameRequest
+    {
+        public Guid CharacterId { get; set; }
+        public string? WorldId { get; set; }
+        public string? WorldName { get; set; }
+        public string? WorldDescription { get; set; }
+    }
     [ApiController]
     [Route("api/[controller]")]
     public class GameController : ControllerBase
@@ -16,6 +23,20 @@ namespace DnDAdventure.API.Controllers
         {
             _gameService = gameService;
             _worldService = worldService;
+        }
+        
+        [HttpPost("character")]
+        public async Task<ActionResult<Character>> CreateCharacter([FromBody] Character character)
+        {
+            var savedCharacter = await _gameService.SaveCharacter(character);
+            return Ok(savedCharacter);
+        }
+        
+        [HttpPost("start")]
+        public async Task<ActionResult<GameState>> StartGame([FromBody] StartGameRequest request)
+        {
+            var gameState = await _gameService.StartNewGame(request.CharacterId, request.WorldId, request.WorldName, request.WorldDescription);
+            return Ok(gameState);
         }
         
         [HttpPost("create")]

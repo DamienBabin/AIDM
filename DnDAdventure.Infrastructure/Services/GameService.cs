@@ -18,6 +18,49 @@ namespace DnDAdventure.Infrastructure.Services
             _characterRepository = characterRepository;
         }
 
+        public async Task<Character> SaveCharacter(Character character)
+        {
+            // Ensure character has an ID
+            if (character.Id == Guid.Empty)
+            {
+                character.Id = Guid.NewGuid();
+            }
+            
+            await _characterRepository.AddAsync(character);
+            return character;
+        }
+
+        public async Task<GameState> StartNewGame(Guid characterId, string? worldId, string? worldName, string? worldDescription)
+        {
+            // Verify character exists
+            var character = await GetCharacterById(characterId);
+            
+            // Parse worldId to Guid if provided, otherwise create a new one
+            Guid parsedWorldId = Guid.Empty;
+            if (!string.IsNullOrEmpty(worldId) && Guid.TryParse(worldId, out parsedWorldId))
+            {
+                // Use provided world ID
+            }
+            else
+            {
+                // Create a new world ID for new worlds
+                parsedWorldId = Guid.NewGuid();
+            }
+            
+            // Create initial game state
+            var gameState = new GameState
+            {
+                Id = Guid.NewGuid(),
+                CharacterId = characterId,
+                WorldId = parsedWorldId,
+                CurrentLocation = "Village of Northaven",
+                CurrentStoryNode = 1 // Starting node
+            };
+            
+            await _gameStateRepository.AddAsync(gameState);
+            return gameState;
+        }
+
         public async Task<GameState> CreateNewGame(Character character)
         {
             // Save character
