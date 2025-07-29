@@ -31,11 +31,46 @@ class CharacterCreator {
         await this.loadClasses();
         this.setupEventListeners();
         this.updateCharacterPreview();
+        
+        // Force Bootstrap dropdown initialization
+        this.initializeDropdowns();
+    }
+    
+    initializeDropdowns() {
+        // Ensure dropdowns are properly initialized and functional
+        const raceDropdown = document.getElementById('race');
+        const classDropdown = document.getElementById('class');
+        
+        console.log('Initializing dropdowns...');
+        console.log('Race dropdown options:', raceDropdown.options.length);
+        console.log('Class dropdown options:', classDropdown.options.length);
+        
+        // Force dropdowns to be interactive by ensuring they have proper attributes
+        raceDropdown.setAttribute('tabindex', '0');
+        classDropdown.setAttribute('tabindex', '0');
+        
+        // Add keyboard support for accessibility
+        raceDropdown.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                raceDropdown.click();
+            }
+        });
+        
+        classDropdown.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                classDropdown.click();
+            }
+        });
+        
+        // Test dropdown functionality
+        console.log('Dropdowns initialized successfully');
     }
 
     async loadWorlds() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/api/world`);
+            const response = await fetch(`${this.apiBaseUrl}/api/world/available`);
             const worlds = await response.json();
             
             const worldSelect = document.getElementById('world-select');
@@ -57,6 +92,11 @@ class CharacterCreator {
         // Race selection
         document.getElementById('race').addEventListener('change', (e) => {
             this.onRaceChange(e.target.value);
+        });
+
+        // Subrace selection
+        document.getElementById('subrace').addEventListener('change', (e) => {
+            this.onSubraceChange(e.target.value);
         });
 
         // Class selection
@@ -109,40 +149,85 @@ class CharacterCreator {
     }
 
     async loadRaces() {
+        const raceSelect = document.getElementById('race');
         try {
-            const response = await fetch(`${this.apiBaseUrl}/api/classesraces/races/flattened`);
-            const races = await response.json();
+            // Show loading state
+            raceSelect.innerHTML = '<option value="" selected disabled>Loading races...</option>';
             
-            const raceSelect = document.getElementById('race');
+            console.log('Fetching races from:', `${this.apiBaseUrl}/api/classesraces/races`);
+            const response = await fetch(`${this.apiBaseUrl}/api/classesraces/races`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const races = await response.json();
+            console.log('Loaded races:', races.length, 'races');
+            
+            // Store races for subrace loading
+            this.availableRaces = races;
+            
+            // Clear loading state
             raceSelect.innerHTML = '<option value="" selected disabled>Select Race</option>';
             
-            races.forEach(race => {
-                const option = document.createElement('option');
-                option.value = race.name;
-                option.textContent = race.displayName;
-                raceSelect.appendChild(option);
-            });
+            if (races && races.length > 0) {
+                races.forEach(race => {
+                    const option = document.createElement('option');
+                    option.value = race.name;
+                    option.textContent = race.name;
+                    raceSelect.appendChild(option);
+                });
+                console.log('Race dropdown populated successfully');
+            } else {
+                raceSelect.innerHTML = '<option value="" selected disabled>No races available</option>';
+                console.warn('No races returned from API');
+            }
         } catch (error) {
             console.error('Error loading races:', error);
+            raceSelect.innerHTML = '<option value="" selected disabled>Error loading races</option>';
+            
+            // Show user-friendly error message
+            this.showErrorMessage('Failed to load races. Please refresh the page and try again.');
         }
     }
 
     async loadClasses() {
+        const classSelect = document.getElementById('class');
         try {
-            const response = await fetch(`${this.apiBaseUrl}/api/classesraces/classes`);
-            const classes = await response.json();
+            // Show loading state
+            classSelect.innerHTML = '<option value="" selected disabled>Loading classes...</option>';
             
-            const classSelect = document.getElementById('class');
+            console.log('Fetching classes from:', `${this.apiBaseUrl}/api/classesraces/classes`);
+            const response = await fetch(`${this.apiBaseUrl}/api/classesraces/classes`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const classes = await response.json();
+            console.log('Loaded classes:', classes.length, 'classes');
+            
+            // Clear loading state
             classSelect.innerHTML = '<option value="" selected disabled>Select Class</option>';
             
-            classes.forEach(dndClass => {
-                const option = document.createElement('option');
-                option.value = dndClass.name;
-                option.textContent = dndClass.name;
-                classSelect.appendChild(option);
-            });
+            if (classes && classes.length > 0) {
+                classes.forEach(dndClass => {
+                    const option = document.createElement('option');
+                    option.value = dndClass.name;
+                    option.textContent = dndClass.name;
+                    classSelect.appendChild(option);
+                });
+                console.log('Class dropdown populated successfully');
+            } else {
+                classSelect.innerHTML = '<option value="" selected disabled>No classes available</option>';
+                console.warn('No classes returned from API');
+            }
         } catch (error) {
             console.error('Error loading classes:', error);
+            classSelect.innerHTML = '<option value="" selected disabled>Error loading classes</option>';
+            
+            // Show user-friendly error message
+            this.showErrorMessage('Failed to load classes. Please refresh the page and try again.');
         }
     }
 
@@ -150,31 +235,130 @@ class CharacterCreator {
         if (!raceName) return;
 
         try {
-            // Get the flattened race data again to find the selected race
-            const response = await fetch(`${this.apiBaseUrl}/api/classesraces/races/flattened`);
-            const races = await response.json();
-            
-            // Find the selected race from the flattened list
-            this.selectedRaceData = races.find(r => r.name === raceName);
-            if (!this.selectedRaceData) {
-                console.error('Selected race not found in flattened data');
+            // Find the selected race from the hierarchical data
+            const selectedRace = this.availableRaces.find(r => r.name === raceName);
+            if (!selectedRace) {
+                console.error('Selected race not found in available races');
                 return;
             }
             
-            // Hide the subrace dropdown since we're using flattened data
-            document.getElementById('subrace').style.display = 'none';
+            console.log('Selected race:', selectedRace);
             
-            // Show race info
-            this.displayRaceInfo();
-            
-            // Update racial bonuses
-            this.updateRacialBonuses();
-            
-            // Update character preview
-            this.updateCharacterPreview();
+            // Check if this race has subraces
+            const subraceSelect = document.getElementById('subrace');
+            if (selectedRace.subraces && selectedRace.subraces.length > 0) {
+                // Show subrace dropdown
+                subraceSelect.style.display = 'block';
+                subraceSelect.innerHTML = '<option value="" selected disabled>Select Subrace</option>';
+                
+                selectedRace.subraces.forEach(subrace => {
+                    const option = document.createElement('option');
+                    option.value = subrace.name;
+                    option.textContent = subrace.name;
+                    subraceSelect.appendChild(option);
+                });
+                
+                // Clear previous race selection until subrace is chosen
+                this.selectedRaceData = null;
+                document.getElementById('race-info-panel').style.display = 'none';
+                
+                console.log('Race has subraces, waiting for subrace selection');
+            } else {
+                // No subraces, use the base race directly
+                subraceSelect.style.display = 'none';
+                
+                // Convert to flattened format for compatibility
+                this.selectedRaceData = {
+                    name: selectedRace.name,
+                    displayName: selectedRace.name,
+                    raceName: selectedRace.name,
+                    subraceName: null,
+                    isSubrace: false,
+                    description: selectedRace.description,
+                    abilityScoreIncrease: selectedRace.abilityScoreIncrease,
+                    traits: selectedRace.traits,
+                    languages: selectedRace.languages,
+                    speed: selectedRace.speed
+                };
+                
+                // Show race info
+                this.displayRaceInfo();
+                
+                // Update racial bonuses
+                this.updateRacialBonuses();
+                
+                // Update character preview
+                this.updateCharacterPreview();
+                
+                console.log('Race selected without subraces:', this.selectedRaceData);
+            }
             
         } catch (error) {
             console.error('Error loading race details:', error);
+        }
+    }
+
+    async onSubraceChange(subraceName) {
+        if (!subraceName) return;
+
+        try {
+            // Find the selected race and subrace
+            const raceName = document.getElementById('race').value;
+            const selectedRace = this.availableRaces.find(r => r.name === raceName);
+            if (!selectedRace) {
+                console.error('Selected race not found');
+                return;
+            }
+
+            const selectedSubrace = selectedRace.subraces.find(s => s.name === subraceName);
+            if (!selectedSubrace) {
+                console.error('Selected subrace not found');
+                return;
+            }
+
+            console.log('Selected subrace:', selectedSubrace);
+
+            // Merge race and subrace data for compatibility
+            this.selectedRaceData = {
+                name: `${selectedRace.name} (${selectedSubrace.name})`,
+                displayName: `${selectedRace.name} (${selectedSubrace.name})`,
+                raceName: selectedRace.name,
+                subraceName: selectedSubrace.name,
+                isSubrace: true,
+                description: selectedSubrace.description || selectedRace.description,
+                abilityScoreIncrease: {
+                    ...selectedRace.abilityScoreIncrease,
+                    ...selectedSubrace.abilityScoreIncrease
+                },
+                traits: [
+                    ...selectedRace.traits,
+                    ...(selectedSubrace.traits || [])
+                ],
+                languages: [
+                    ...selectedRace.languages,
+                    ...(selectedSubrace.languages || [])
+                ],
+                speed: selectedSubrace.speed || selectedRace.speed,
+                // Additional subrace-specific data if available
+                pros: selectedSubrace.pros || [],
+                cons: selectedSubrace.cons || [],
+                bestFor: selectedSubrace.bestFor || [],
+                playStyle: selectedSubrace.playStyle || null
+            };
+
+            // Show race info
+            this.displayRaceInfo();
+
+            // Update racial bonuses
+            this.updateRacialBonuses();
+
+            // Update character preview
+            this.updateCharacterPreview();
+
+            console.log('Subrace selected:', this.selectedRaceData);
+
+        } catch (error) {
+            console.error('Error loading subrace details:', error);
         }
     }
 
@@ -902,6 +1086,34 @@ class CharacterCreator {
         }
     }
 
+    showErrorMessage(message) {
+        // Create or update error message display
+        let errorDiv = document.getElementById('error-message');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.id = 'error-message';
+            errorDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+            errorDiv.innerHTML = `
+                <strong>Error:</strong> <span id="error-text"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            // Insert at the top of the character creation section
+            const characterSection = document.getElementById('character-creation');
+            characterSection.insertBefore(errorDiv, characterSection.firstChild);
+        }
+        
+        document.getElementById('error-text').textContent = message;
+        errorDiv.style.display = 'block';
+        
+        // Auto-hide after 10 seconds
+        setTimeout(() => {
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
+        }, 10000);
+    }
+
     resetForm() {
         if (!confirm('Are you sure you want to reset the entire form? This will clear all your selections.')) {
             return;
@@ -934,6 +1146,12 @@ class CharacterCreator {
         document.getElementById('class-info-panel').style.display = 'none';
         document.getElementById('cantrip-selection').style.display = 'none';
         document.getElementById('ability-score-panel').style.display = 'none';
+
+        // Hide error messages
+        const errorDiv = document.getElementById('error-message');
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+        }
 
         // Update character preview
         this.updateCharacterPreview();
