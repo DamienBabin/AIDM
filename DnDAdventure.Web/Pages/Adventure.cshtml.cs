@@ -24,7 +24,7 @@ namespace DnDAdventure.Web.Pages
                 return RedirectToPage("/Index");
             }
 
-            ApiBaseUrl = _configuration["ApiBaseUrl"] ?? "https://localhost:7001";
+            ApiBaseUrl = _configuration["ApiBaseUrl"] ?? "http://localhost:5000";
             GameStateId = gameStateId;
             CharacterId = characterId;
 

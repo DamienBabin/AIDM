@@ -3,7 +3,7 @@ class AdventureGame {
     constructor() {
         this.gameStateId = document.getElementById('game-state-id')?.value;
         this.characterId = document.getElementById('character-id')?.value;
-        this.apiBaseUrl = window.apiBaseUrl || 'https://localhost:7001';
+        this.apiBaseUrl = window.apiBaseUrl || 'http://localhost:5000';
         this.currentNode = null;
         this.character = null;
         this.gameState = null;

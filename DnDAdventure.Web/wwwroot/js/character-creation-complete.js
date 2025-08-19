@@ -415,14 +415,14 @@ class CharacterCreator {
                     <div class="col-md-6">
                         <h6 class="text-success">✓ Pros</h6>
                         <ul class="list-unstyled">
-                            ${this.selectedRaceData.pros.map(pro => `<li class="text-success">• ${pro}</li>`).join('')}
+                            ${(this.selectedRaceData.pros || []).map(pro => `<li class="text-success">• ${pro}</li>`).join('')}
                         </ul>
                     </div>
                     <div class="col-md-6">
                         <h6 class="text-danger">✗ Cons</h6>
                         <ul class="list-unstyled">
                             ${this.selectedRaceData.cons && this.selectedRaceData.cons.length > 0 ? 
-                                this.selectedRaceData.cons.map(con => `<li class="text-danger">• ${con}</li>`).join('') : 
+                                (this.selectedRaceData.cons || []).map(con => `<li class="text-danger">• ${con}</li>`).join('') :
                                 '<li class="text-muted">• No significant drawbacks</li>'}
                         </ul>
                     </div>
@@ -431,7 +431,7 @@ class CharacterCreator {
                     <div class="mt-3">
                         <h6 class="text-primary">🎯 Best For</h6>
                         <ul class="list-unstyled">
-                            ${this.selectedRaceData.bestFor.map(use => `<li class="text-primary">• ${use}</li>`).join('')}
+                            ${(this.selectedRaceData.bestFor || []).map(use => `<li class="text-primary">• ${use}</li>`).join('')}
                         </ul>
                     </div>
                 ` : ''}
@@ -549,7 +549,7 @@ class CharacterCreator {
             ${this.selectedSubclass.features && this.selectedSubclass.features.length > 0 ? `
                 <div class="mt-2">
                     <strong>Subclass Features:</strong>
-                    ${this.selectedSubclass.features.map(feature => `
+                    ${(this.selectedSubclass.features || []).map(feature => `
                         <div class="mb-2">
                             <strong>${feature.name} (Level ${feature.levelUnlocked}):</strong> ${feature.description}
                         </div>
@@ -906,7 +906,7 @@ class CharacterCreator {
         if (this.selectedClass) {
             // Starting equipment
             startingEquipment.innerHTML = '';
-            this.selectedClass.startingEquipment.forEach(item => {
+            (this.selectedClass.startingEquipment || []).forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'list-group-item';
                 li.textContent = item;
@@ -974,7 +974,15 @@ class CharacterCreator {
                 name: 'Human',
                 raceName: 'Human',
                 subraceName: null,
-                abilityScoreIncrease: { Strength: 1, Dexterity: 1 }
+                abilityScoreIncrease: { Strength: 1, Dexterity: 1 },
+                traits: [],
+                languages: ['Common'],
+                speed: 30,
+                pros: [],
+                cons: [],
+                bestFor: [],
+                playStyle: null,
+                isSubrace: false
             };
         }
 
@@ -983,7 +991,11 @@ class CharacterCreator {
             this.selectedClass = {
                 name: 'Fighter',
                 hitDie: 10,
-                spellcasting: null
+                spellcasting: null,
+                startingEquipment: ['Leather armor', 'Shield', 'Longsword'],
+                armorProficiencies: ['Light armor', 'Medium armor', 'Heavy armor', 'Shields'],
+                weaponProficiencies: ['Simple weapons', 'Martial weapons'],
+                savingThrowProficiencies: ['Strength', 'Constitution']
             };
         }
 
@@ -1001,11 +1013,11 @@ class CharacterCreator {
             finalAbilityScores[ability] = this.abilityScores[ability] + (this.racialBonuses[ability] || 0);
         });
 
-        // Collect all racial traits
-        const allRacialTraits = this.selectedRaceData.traits.map(t => t.name);
+        // Collect all racial traits (safely handle undefined traits)
+        const allRacialTraits = (this.selectedRaceData.traits || []).map(t => t.name || t);
         
-        // Collect all languages
-        const allLanguages = [...this.selectedRaceData.languages];
+        // Collect all languages (safely handle undefined languages)
+        const allLanguages = [...(this.selectedRaceData.languages || ['Common'])];
         
         // Calculate speed
         let speed = this.selectedRaceData.speed;
@@ -1022,7 +1034,7 @@ class CharacterCreator {
             racialBonuses: { ...this.racialBonuses },
             attributes: { ...finalAbilityScores },
             racialTraits: allRacialTraits,
-            cantrips: this.selectedCantrips.map(c => c.name),
+            cantrips: (this.selectedCantrips || []).map(c => c.name),
             languages: allLanguages,
             speed: speed,
             level: 1,
