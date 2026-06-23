@@ -9,7 +9,7 @@ services:
       - "5000:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - AI:Endpoint=http://localhost:8080/generate
+      - AI:Endpoint=http://localhost/api/ai/generate
     restart: unless-stopped
 
   web:

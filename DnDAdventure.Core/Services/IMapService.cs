@@ -5,6 +5,7 @@ namespace DnDAdventure.Core.Services
     public interface IMapService
     {
         Task<bool> MoveCharacter(Guid characterId, Direction direction);
+        Task<bool> MoveCharacterTo(Guid characterId, int x, int y);
         Task<ExplorationResult> ExploreCurrentCell(Guid characterId);
         Task<InteractionResult> InteractWithPOI(Guid characterId, Guid poiId, string action);
         (WorldMap map, int x, int y) GetCharacterLocation(Guid characterId);
@@ -12,5 +13,6 @@ namespace DnDAdventure.Core.Services
         List<WorldMap> GetAllMaps();
         WorldMap? GetMap(Guid mapId);
         string GetMapDisplay(Guid characterId);
+        int GetMovementFeet(Guid characterId);
     }
 } 

@@ -19,6 +19,162 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.play-layout {
+    display: grid;
+    grid-template-columns: minmax(360px, 1.15fr) minmax(280px, 0.85fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.map-panel {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hex-status {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 12px 0 16px;
+}
+
+.hex-status-item {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.hex-status-label {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.hex-status-value {
+    color: #212529;
+    font-weight: 700;
+}
+
+.hex-map {
+    --hex-size: 58px;
+    --hex-gap: 5px;
+    display: grid;
+    grid-template-columns: repeat(9, var(--hex-size));
+    grid-auto-rows: calc(var(--hex-size) * 0.86);
+    gap: var(--hex-gap);
+    justify-content: center;
+    padding: 14px 0 22px;
+    overflow-x: auto;
+}
+
+.hex-cell {
+    width: var(--hex-size);
+    height: var(--hex-size);
+    border: 0;
+    clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
+    background: #e9ecef;
+    color: #212529;
+    display: grid;
+    place-items: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease, outline 0.15s ease;
+}
+
+.hex-cell:nth-child(18n + 10),
+.hex-cell:nth-child(18n + 11),
+.hex-cell:nth-child(18n + 12),
+.hex-cell:nth-child(18n + 13),
+.hex-cell:nth-child(18n + 14),
+.hex-cell:nth-child(18n + 15),
+.hex-cell:nth-child(18n + 16),
+.hex-cell:nth-child(18n + 17),
+.hex-cell:nth-child(18n + 18) {
+    transform: translateX(calc(var(--hex-size) / 2));
+}
+
+.hex-cell:hover {
+    filter: brightness(0.96);
+}
+
+.hex-cell.in-range {
+    outline: 3px solid rgba(13, 110, 253, 0.45);
+}
+
+.hex-cell.selected {
+    outline: 3px solid #ffc107;
+}
+
+.hex-cell.player {
+    outline: 4px solid #0d6efd;
+    color: #fff;
+}
+
+.hex-cell.blocked {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.hex-cell.entry::after {
+    content: "E";
+    position: absolute;
+    right: 10px;
+    bottom: 8px;
+    font-size: 0.65rem;
+    background: rgba(255, 255, 255, 0.85);
+    color: #212529;
+    border-radius: 999px;
+    padding: 1px 4px;
+}
+
+.terrain-plains,
+.terrain-road {
+    background: #d8c690;
+}
+
+.terrain-forest {
+    background: #6e9f72;
+}
+
+.terrain-mountain {
+    background: #8b8f96;
+}
+
+.terrain-water {
+    background: #78aeda;
+}
+
+.terrain-desert {
+    background: #dfbd71;
+}
+
+.terrain-swamp {
+    background: #7c8c67;
+}
+
+.terrain-cave {
+    background: #7d6f64;
+}
+
+.hex-detail {
+    min-height: 140px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.hex-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
 .story-text {
     font-size: 1.1em;
     line-height: 1.6;
@@ -174,6 +330,14 @@
         right: auto;
         margin-bottom: 20px;
     }
+
+    .play-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .hex-map {
+        --hex-size: 44px;
+    }
 }
 </style>
 
@@ -194,6 +358,10 @@
                     <div class="stat-item">
                         <div class="stat-value" id="hp-current">--</div>
                         <div class="stat-label">HP</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="xp-current">--</div>
+                        <div class="stat-label">XP</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="str-value">--</div>
@@ -233,6 +401,50 @@
             <h6>🎒 Inventory</h6>
             <div id="inventory-items">
                 <span class="inventory-item">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="play-layout">
+        <div>
+            <!-- Hex Map Panel -->
+            <div class="map-panel">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                    <div>
+                        <h4 class="mb-1">Map</h4>
+                        <div class="text-muted" id="map-name">Loading map...</div>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="reset-movement">Reset Movement</button>
+                </div>
+                <div class="hex-status">
+                    <div class="hex-status-item">
+                        <div class="hex-status-label">Speed</div>
+                        <div class="hex-status-value" id="movement-speed">--</div>
+                    </div>
+                    <div class="hex-status-item">
+                        <div class="hex-status-label">Hexes Left</div>
+                        <div class="hex-status-value" id="movement-left">--</div>
+                    </div>
+                    <div class="hex-status-item">
+                        <div class="hex-status-label">Position</div>
+                        <div class="hex-status-value" id="hex-position">--</div>
+                    </div>
+                </div>
+                <div class="hex-map" id="hex-map"></div>
+            </div>
+        </div>
+
+        <div>
+            <div class="map-panel">
+                <h5>Selected Hex</h5>
+                <div class="hex-detail" id="hex-detail">
+                    Select a highlighted hex to inspect it.
+                </div>
+                <div class="hex-actions">
+                    <button type="button" class="btn btn-primary" id="move-to-hex" disabled>Move</button>
+                    <button type="button" class="btn btn-outline-secondary" id="explore-hex">Explore Current Hex</button>
+                </div>
+                <div class="hex-actions" id="poi-actions"></div>
             </div>
         </div>
     </div>

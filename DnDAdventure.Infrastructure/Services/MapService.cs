@@ -132,6 +132,49 @@ namespace DnDAdventure.Infrastructure.Services
             return true;
         }
 
+        public Task<bool> MoveCharacterTo(Guid characterId, int x, int y)
+        {
+            var position = _worldService.CurrentWorld.GetPlayerPosition(characterId);
+            if (position == null)
+                return Task.FromResult(false);
+
+            var map = _worldService.CurrentWorld.GetMap(position.CurrentMapId);
+            if (map == null || x < 0 || x >= 9 || y < 0 || y >= 9)
+                return Task.FromResult(false);
+
+            if (!map.Grid[x][y].Passable)
+                return Task.FromResult(false);
+
+            var character = _worldService.CurrentWorld.Characters.TryGetValue(characterId, out var characterValue)
+                ? characterValue
+                : null;
+
+            var speed = Math.Max(5, character?.Speed ?? 30);
+            var movementLimit = Math.Max(1, speed / 5);
+            var distance = GetHexDistance(position.X, position.Y, x, y);
+
+            if (distance > movementLimit)
+                return Task.FromResult(false);
+
+            _worldService.CurrentWorld.SetPlayerPosition(characterId, position.CurrentMapId, x, y);
+            return Task.FromResult(true);
+        }
+
+        private static int GetHexDistance(int ax, int ay, int bx, int by)
+        {
+            var a = OffsetToCube(ax, ay);
+            var b = OffsetToCube(bx, by);
+            return Math.Max(Math.Abs(a.X - b.X), Math.Max(Math.Abs(a.Y - b.Y), Math.Abs(a.Z - b.Z)));
+        }
+
+        private static (int X, int Y, int Z) OffsetToCube(int col, int row)
+        {
+            var x = col - (row - (row & 1)) / 2;
+            var z = row;
+            var y = -x - z;
+            return (x, y, z);
+        }
+
         /// <summary>
         /// Explores the current cell a character is standing on
         /// </summary>
@@ -186,7 +229,8 @@ namespace DnDAdventure.Infrastructure.Services
                         Description = poi.Description,
                         Type = poi.Type.ToString(),
                         X = position.X,
-                        Y = position.Y
+                        Y = position.Y,
+                        AvailableActions = poi.AvailableActions.Select(a => a.Name).ToList()
                     };
                 }
             }
@@ -228,6 +272,18 @@ namespace DnDAdventure.Infrastructure.Services
             var poiAction = poi.AvailableActions.FirstOrDefault(a => a.Name.Equals(action, StringComparison.OrdinalIgnoreCase));
             if (poiAction == null)
                 return new InteractionResult { Success = false, Message = $"Action '{action}' not available for this point of interest." };
+
+            var currentGameState = _worldService.CurrentWorld.GameStates.Values
+                .FirstOrDefault(gs => gs.CharacterId == characterId);
+
+            if (currentGameState != null && poiAction.Effects.TryGetValue("SetFlag", out var actionFlag))
+            {
+                var flagParts = actionFlag.Split('=');
+                if (flagParts.Length == 2 && currentGameState.Flags.TryGetValue(flagParts[0], out var existingFlag) && existingFlag)
+                {
+                    return new InteractionResult { Success = false, Message = "You already completed this lesson." };
+                }
+            }
 
             // Check requirements
             foreach (var req in poiAction.Requirements)
@@ -272,6 +328,49 @@ namespace DnDAdventure.Infrastructure.Services
                             result.QuestsStarted.Add(effect.Value);
                         }
                         break;
+                    case "CompleteQuest":
+                        var completeState = _worldService.CurrentWorld.GameStates.Values
+                            .FirstOrDefault(gs => gs.CharacterId == characterId);
+                        if (completeState != null)
+                        {
+                            completeState.ActiveQuests.Remove(effect.Value);
+                            if (!completeState.CompletedQuests.Contains(effect.Value))
+                            {
+                                completeState.CompletedQuests.Add(effect.Value);
+                                result.QuestsCompleted.Add(effect.Value);
+                            }
+                        }
+                        break;
+                    case "AddExperience":
+                        if (int.TryParse(effect.Value, out var xp))
+                        {
+                            result.ExperienceGained += xp;
+                            character.ExperiencePoints += xp;
+
+                            while (character.ExperiencePoints >= character.ExperienceToNextLevel)
+                            {
+                                character.ExperiencePoints -= character.ExperienceToNextLevel;
+                                character.Level++;
+                                character.ExperienceToNextLevel = character.Level * 100;
+                                character.MaxHealthPoints += Math.Max(1, character.Level);
+                                character.HealthPoints = character.MaxHealthPoints;
+                                result.LeveledUp = true;
+                                result.NewLevel = character.Level;
+                            }
+                        }
+                        break;
+                    case "SetFlag":
+                        var flagState = _worldService.CurrentWorld.GameStates.Values
+                            .FirstOrDefault(gs => gs.CharacterId == characterId);
+                        if (flagState != null)
+                        {
+                            var flagParts = effect.Value.Split('=');
+                            if (flagParts.Length == 2 && bool.TryParse(flagParts[1], out var flagValue))
+                            {
+                                flagState.Flags[flagParts[0]] = flagValue;
+                            }
+                        }
+                        break;
                     // Add more effect types as needed
                 }
             }
@@ -293,6 +392,15 @@ namespace DnDAdventure.Infrastructure.Services
                 return "Map not found.";
 
             return $"Map: {map.Name}\n\n{map.GetMapDisplay()}\n\nYou are at coordinates: ({position.X}, {position.Y})";
+        }
+
+        public int GetMovementFeet(Guid characterId)
+        {
+            var character = _worldService.CurrentWorld.Characters.TryGetValue(characterId, out var characterValue)
+                ? characterValue
+                : null;
+
+            return Math.Max(5, character?.Speed ?? 30);
         }
 
         /// <summary>
@@ -324,7 +432,8 @@ namespace DnDAdventure.Infrastructure.Services
                                 Description = poi.Description,
                                 Type = poi.Type.ToString(),
                                 X = x,
-                                Y = y
+                                Y = y,
+                                AvailableActions = poi.AvailableActions.Select(a => a.Name).ToList()
                             });
                         }
                     }

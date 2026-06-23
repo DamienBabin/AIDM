@@ -60,6 +60,64 @@ namespace DnDAdventure.API.Controllers
                 return BadRequest($"Error getting character location: {ex.Message}");
             }
         }
+
+        [HttpGet("state/{characterId}")]
+        public ActionResult<MapPlayState> GetMapState(Guid characterId)
+        {
+            try
+            {
+                var (map, x, y) = _mapService.GetCharacterLocation(characterId);
+
+                if (map == null)
+                    return NotFound("Character location not found");
+
+                var poisById = _mapService.GetMapPOIs(map.Id).ToDictionary(p => p.Id);
+                var cells = new List<HexCellInfo>();
+                for (var cellY = 0; cellY < 9; cellY++)
+                {
+                    for (var cellX = 0; cellX < 9; cellX++)
+                    {
+                        var cell = map.Grid[cellX][cellY];
+                        poisById.TryGetValue(cell.PointOfInterestId, out var poi);
+                        cells.Add(new HexCellInfo
+                        {
+                            X = cellX,
+                            Y = cellY,
+                            Name = string.IsNullOrWhiteSpace(cell.Name) ? cell.TerrainType.ToString() : cell.Name,
+                            Description = cell.Description,
+                            TerrainType = cell.TerrainType.ToString(),
+                            Passable = cell.Passable,
+                            MovementCost = cell.MovementCost,
+                            HasPlayer = cell.HasPlayer,
+                            HasNpc = cell.NPCId != Guid.Empty,
+                            HasPointOfInterest = cell.PointOfInterestId != Guid.Empty,
+                            HasStructure = cell.StructureId != Guid.Empty,
+                            IsEntryPoint = cell.Passable && (cellX == 0 || cellX == 8 || cellY == 0 || cellY == 8),
+                            PointOfInterestId = cell.PointOfInterestId == Guid.Empty ? null : cell.PointOfInterestId,
+                            PointOfInterestActions = poi?.AvailableActions ?? new List<string>()
+                        });
+                    }
+                }
+
+                var movementFeet = _mapService.GetMovementFeet(characterId);
+
+                return Ok(new MapPlayState
+                {
+                    MapId = map.Id,
+                    MapName = map.Name,
+                    Description = map.Description,
+                    PlayerX = x,
+                    PlayerY = y,
+                    MovementFeet = movementFeet,
+                    HexesPerTurn = Math.Max(1, movementFeet / 5),
+                    Cells = cells
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error getting map state: {ex.Message}");
+            }
+        }
         
         [HttpPost("move/{characterId}")]
         public async Task<ActionResult<MoveResult>> MoveCharacter(Guid characterId, [FromBody] MoveRequest request)
@@ -77,6 +135,44 @@ namespace DnDAdventure.API.Controllers
                 {
                     Success = true,
                     Message = $"Moved to {map?.Grid[x][y].Name ?? "new location"}",
+                    NewX = x,
+                    NewY = y,
+                    NewMapId = map?.Id ?? Guid.Empty,
+                    NewMapName = map?.Name ?? string.Empty
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new MoveResult
+                {
+                    Success = false,
+                    Message = $"Error moving character: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost("move-to/{characterId}")]
+        public async Task<ActionResult<MoveResult>> MoveCharacterTo(Guid characterId, [FromBody] MoveToRequest request)
+        {
+            try
+            {
+                var success = await _mapService.MoveCharacterTo(characterId, request.X, request.Y);
+
+                if (!success)
+                    return BadRequest(new MoveResult { Success = false, Message = "That hex is outside your movement range or cannot be entered." });
+
+                var (map, x, y) = _mapService.GetCharacterLocation(characterId);
+
+                var cellName = map == null
+                    ? "new location"
+                    : string.IsNullOrWhiteSpace(map.Grid[x][y].Name)
+                        ? map.Grid[x][y].TerrainType.ToString()
+                        : map.Grid[x][y].Name;
+
+                return Ok(new MoveResult
+                {
+                    Success = true,
+                    Message = $"Moved to {cellName}",
                     NewX = x,
                     NewY = y,
                     NewMapId = map?.Id ?? Guid.Empty,
@@ -214,6 +310,12 @@ namespace DnDAdventure.API.Controllers
         public Direction Direction { get; set; }
     }
 
+    public class MoveToRequest
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+    }
+
     public class InteractRequest
     {
         public Guid PointOfInterestId { get; set; }
@@ -254,5 +356,35 @@ namespace DnDAdventure.API.Controllers
     {
         public string TextDisplay { get; set; } = string.Empty;
         public Dictionary<string, Guid> ConnectedMaps { get; set; } = new();
+    }
+
+    public class MapPlayState
+    {
+        public Guid MapId { get; set; }
+        public string MapName { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int PlayerX { get; set; }
+        public int PlayerY { get; set; }
+        public int MovementFeet { get; set; }
+        public int HexesPerTurn { get; set; }
+        public List<HexCellInfo> Cells { get; set; } = new();
+    }
+
+    public class HexCellInfo
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string TerrainType { get; set; } = string.Empty;
+        public bool Passable { get; set; }
+        public int MovementCost { get; set; }
+        public bool HasPlayer { get; set; }
+        public bool HasNpc { get; set; }
+        public bool HasPointOfInterest { get; set; }
+        public bool HasStructure { get; set; }
+        public bool IsEntryPoint { get; set; }
+        public Guid? PointOfInterestId { get; set; }
+        public List<string> PointOfInterestActions { get; set; } = new();
     }
 }

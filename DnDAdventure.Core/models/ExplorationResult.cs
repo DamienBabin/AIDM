@@ -24,9 +24,13 @@ namespace DnDAdventure.Core.Models
     {
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
+        public int ExperienceGained { get; set; }
+        public bool LeveledUp { get; set; }
+        public int NewLevel { get; set; }
         public List<string> ItemsGained { get; set; } = new();
         public List<string> ItemsLost { get; set; } = new();
         public List<string> QuestsStarted { get; set; } = new();
+        public List<string> QuestsCompleted { get; set; } = new();
     }
 
     public class NPCBriefInfo
@@ -44,6 +48,7 @@ namespace DnDAdventure.Core.Models
         public string Type { get; set; } = string.Empty;
         public int X { get; set; }
         public int Y { get; set; }
+        public List<string> AvailableActions { get; set; } = new();
     }
 
     public class StructureBriefInfo

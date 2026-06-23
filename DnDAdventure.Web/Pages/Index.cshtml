@@ -50,8 +50,9 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label for="world-select" class="form-label">Choose World</label>
-                            <select class="form-select" id="world-select" required>
-                                <option value="" selected disabled>Select a World</option>
+                            <select class="form-select" id="world-select" onchange="window.characterCreator?.onWorldChange(this.value)" required>
+                                <option value="" disabled>Select a World</option>
+                                <option value="starter-5e" selected>First Steps: 5E Tutorial</option>
                                 <option value="new">Create New World</option>
                                 <!-- Existing worlds will be populated via JavaScript -->
                             </select>
@@ -78,7 +79,13 @@
                     </div>
                     <div class="card-body">
                         <div id="world-info">
-                            <p class="text-muted">Select a world to view details</p>
+                            <h6>First Steps: 5E Tutorial</h6>
+                            <p>A guided beginner world that introduces core D&D 5E ideas through play.</p>
+                            <ul class="mb-0">
+                                <li>Learn ability checks, saving throws, armor class, and hit points.</li>
+                                <li>Practice social, exploration, and combat choices.</li>
+                                <li>Starts in a safe training village with mentor NPCs.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>

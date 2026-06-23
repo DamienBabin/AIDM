@@ -88,7 +88,48 @@ class CharacterCreator {
         }
     }
 
+    onWorldChange(worldId) {
+        const newWorldForm = document.getElementById('new-world-form');
+        const worldInfo = document.getElementById('world-info');
+
+        if (newWorldForm) {
+            newWorldForm.style.display = worldId === 'new' ? 'block' : 'none';
+        }
+
+        if (!worldInfo) return;
+
+        if (worldId === 'starter-5e') {
+            worldInfo.innerHTML = `
+                <h6>First Steps: 5E Tutorial</h6>
+                <p>A guided beginner world that introduces core D&D 5E ideas through play.</p>
+                <ul class="mb-0">
+                    <li>Learn ability checks, saving throws, armor class, and hit points.</li>
+                    <li>Practice social, exploration, and combat choices.</li>
+                    <li>Starts in a safe training village with mentor NPCs.</li>
+                </ul>
+            `;
+        } else if (worldId === 'new') {
+            worldInfo.innerHTML = `
+                <h6>Create New World</h6>
+                <p class="mb-0">Name your own setting and begin with the default adventure structure.</p>
+            `;
+        } else if (worldId) {
+            const selectedOption = document.querySelector(`#world-select option[value="${CSS.escape(worldId)}"]`);
+            worldInfo.innerHTML = `
+                <h6>${selectedOption ? selectedOption.textContent : 'Saved World'}</h6>
+                <p class="mb-0">Continue or build from an existing saved world.</p>
+            `;
+        } else {
+            worldInfo.innerHTML = '<p class="text-muted">Select a world to view details</p>';
+        }
+    }
+
     setupEventListeners() {
+        // World selection
+        document.getElementById('world-select').addEventListener('change', (e) => {
+            this.onWorldChange(e.target.value);
+        });
+
         // Race selection
         document.getElementById('race').addEventListener('change', (e) => {
             this.onRaceChange(e.target.value);
@@ -1050,15 +1091,19 @@ class CharacterCreator {
             createButton.disabled = true;
             createButton.textContent = 'Creating Character...';
 
-            // TEMPORARY: Skip world validation for testing backend integration
-            // TODO: Fix world dropdown functionality and re-enable validation
-            console.log('TEMP: Bypassing world validation for backend testing');
-            
             // Check if world is selected
             let selectedWorld = document.getElementById('world-select').value;
             if (!selectedWorld) {
-                console.log('TEMP: Using default world selection');
-                selectedWorld = 'new'; // Default to creating a new world
+                selectedWorld = 'starter-5e';
+                document.getElementById('world-select').value = selectedWorld;
+                this.onWorldChange(selectedWorld);
+            }
+
+            if (selectedWorld === 'new' && !document.getElementById('world-name').value.trim()) {
+                alert('Please name your new world or choose the 5E tutorial world.');
+                createButton.disabled = false;
+                createButton.textContent = 'Create Character';
+                return;
             }
 
             // Save the character
@@ -1081,8 +1126,8 @@ class CharacterCreator {
             const gameStateData = {
                 characterId: savedCharacter.id,
                 worldId: selectedWorld === 'new' ? null : selectedWorld,
-                worldName: selectedWorld === 'new' ? document.getElementById('world-name').value : null,
-                worldDescription: selectedWorld === 'new' ? document.getElementById('world-description').value : null
+                worldName: selectedWorld === 'new' ? document.getElementById('world-name').value : 'First Steps: 5E Tutorial',
+                worldDescription: selectedWorld === 'new' ? document.getElementById('world-description').value : 'A beginner-friendly D&D 5E tutorial world.'
             };
 
             const gameStateResponse = await fetch(`${this.apiBaseUrl}/api/game/start`, {

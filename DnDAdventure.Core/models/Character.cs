@@ -11,6 +11,8 @@ namespace DnDAdventure.Core.Models
         public string? Subclass { get; set; }
         public string Background { get; set; } = string.Empty;
         public int Level { get; set; } = 1;
+        public int ExperiencePoints { get; set; }
+        public int ExperienceToNextLevel { get; set; } = 100;
         public Dictionary<string, int> Attributes { get; set; } = new();
         public Dictionary<string, int> BaseAttributes { get; set; } = new();
         public Dictionary<string, int> RacialBonuses { get; set; } = new();
